@@ -1,4 +1,4 @@
-Element["" "DIP6" "DIP6" "DIP6" 0.0000 0.0000 330.00mil 25.00mil 3 100 ""]
+Element["" "DIP6_wide" "DIP6_wide" "DIP6_wide" 0.0000 0.0000 330.00mil 25.00mil 3 100 ""]
 (
 	Pin[0.0000 0.0000 1.5000mm 1.0000mm 1.6000mm 1.0000mm "1" "1" "square"]
 	Pad[-25.00mil 0.0000 25.00mil 0.0000 1.4920mm 1.0000mm 1.5900mm "1" "1" "onsolder,square"]
