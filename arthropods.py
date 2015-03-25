@@ -4,7 +4,7 @@ from fpgen import *
 
 STYLE_THICKENED, STYLE_DENT, STYLE_BOXED, \
     STYLE_WSL_ARROW, STYLE_WSL_DENT = xrange(5)
-SHAPE_STRAIGHT, SHAPE_ZIGZAG, SHAPE_BENDED = xrange(3)
+SHAPE_STRAIGHT, SHAPE_ZIGZAG, SHAPE_USHAPED = xrange(3)
 
 pin_thickness = 1.5 # mm
 pin_clearance = 1. # mm
@@ -23,7 +23,7 @@ def invalid_arguments(message):
 def main():
     try:
         options, args = getopt.getopt(
-            sys.argv[1:], 's:ZUd:', ['style=', 'straight', 'zigzag', 'bended',
+            sys.argv[1:], 's:ZUd:', ['style=', 'straight', 'zigzag', 'u-shaped',
                                      'row-distance=', 'help', 'version'])
     except getopt.GetoptError as e:
         invalid_arguments(e.msg)
@@ -47,8 +47,8 @@ def main():
             shape = SHAPE_STRAIGHT
         elif option in ['-Z', '--zigzag']:
             shape = SHAPE_ZIGZAG
-        elif option in ['-U', '--bended']:
-            shape = SHAPE_BENDED
+        elif option in ['-U', '--u-shaped']:
+            shape = SHAPE_USHAPED
         elif option in ['-d', '--row-distance']:
             try:
                 row_distance = int(value)
@@ -64,7 +64,7 @@ def main():
             sys.stdout.write(
 "      --straight        one straight row of pins\n"
 "      -Z, --zigzag      two rows of pins, numbered in zig-zag\n"
-"      -U, --bended      two rows of pins, numbered in an U shape\n"
+"      -U, --u-shaped    two rows of pins, numbered in an U shape\n"
 "      -d, --row-distance  distance between the rows, as a number in mils\n")
             sys.stdout.write("\n")
             sys.stdout.write(
@@ -90,14 +90,14 @@ def main():
         invalid_arguments("`%s' is not an integer" % pin_count_str)
 
     if shape != SHAPE_STRAIGHT and pin_count % 2 != 0:
-        invalid_arguments("Pin count for zigzag/bended shape must be even")
+        invalid_arguments("Pin count for zigzag/u-shaped shape must be even")
 
     if shape == SHAPE_STRAIGHT:
         rows = 1
         row_distance = 0
     elif shape == SHAPE_ZIGZAG:
         rows = 2
-    elif shape == SHAPE_BENDED:
+    elif shape == SHAPE_USHAPED:
         rows = 2
     else:
         raise ValueError
@@ -141,7 +141,7 @@ def main():
 
         if shape == SHAPE_ZIGZAG:
             i0, i1 = i * 2 + 1, i * 2 + 2
-        if shape == SHAPE_BENDED:
+        if shape == SHAPE_USHAPED:
             i0, i1 = i + 1, pin_count - i
 
         if shape == SHAPE_STRAIGHT:
