@@ -15,4 +15,6 @@ do	./arthropods.py --straight --style=thickened SIP${pin_count} $pin_count \
 	  > footprints/WSL${pin_count}.fp
 	./arthropods.py --zigzag --style=wsl-dent 2x${pin_count}PIN_WSL $[$pin_count * 2] \
 	  > footprints/WSLalt${pin_count}.fp
+	./arthropods.py --zigzag --style=psl 2x${pin_count}PIN_PSL $[$pin_count * 2] \
+	  > footprints/PSL${pin_count}.fp
 done
