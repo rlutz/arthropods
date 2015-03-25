@@ -133,6 +133,13 @@ def main():
         text_x, text_y, text_dir, text_scale = \
           '%dmil' % x0, '%dmil' % (y0 - 70.), 0, 100
 
+    if style == STYLE_PSL:
+        if shape == SHAPE_STRAIGHT:
+            invalid_arguments("PSL only works with two pin rows")
+        if row_distance != 100:
+            invalid_arguments(
+                "PSL style does not work with a custom row distance")
+
     start(None, name, name, name, 0., 0.,
           text_x, text_y, text_dir, text_scale, None)
 
