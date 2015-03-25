@@ -1,0 +1,23 @@
+Element["" "DIP6" "DIP6" "DIP6" 0.0000 0.0000 330.00mil 25.00mil 3 100 ""]
+(
+	Pin[0.0000 0.0000 1.5000mm 1.0000mm 1.6000mm 1.0000mm "1" "1" "square"]
+	Pad[-25.00mil 0.0000 25.00mil 0.0000 1.4920mm 1.0000mm 1.5900mm "1" "1" "onsolder,square"]
+	Pin[600.00mil 0.0000 1.5000mm 1.0000mm 1.6000mm 1.0000mm "6" "6" ""]
+	Pad[575.00mil 0.0000 625.00mil 0.0000 1.4920mm 1.0000mm 1.5900mm "6" "6" "onsolder,edge2"]
+	Pin[0.0000 100.00mil 1.5000mm 1.0000mm 1.6000mm 1.0000mm "2" "2" ""]
+	Pad[-25.00mil 100.00mil 25.00mil 100.00mil 1.4920mm 1.0000mm 1.5900mm "2" "2" "onsolder"]
+	Pin[600.00mil 100.00mil 1.5000mm 1.0000mm 1.6000mm 1.0000mm "5" "5" ""]
+	Pad[575.00mil 100.00mil 625.00mil 100.00mil 1.4920mm 1.0000mm 1.5900mm "5" "5" "onsolder,edge2"]
+	Pin[0.0000 200.00mil 1.5000mm 1.0000mm 1.6000mm 1.0000mm "3" "3" ""]
+	Pad[-25.00mil 200.00mil 25.00mil 200.00mil 1.4920mm 1.0000mm 1.5900mm "3" "3" "onsolder"]
+	Pin[600.00mil 200.00mil 1.5000mm 1.0000mm 1.6000mm 1.0000mm "4" "4" ""]
+	Pad[575.00mil 200.00mil 625.00mil 200.00mil 1.4920mm 1.0000mm 1.5900mm "4" "4" "onsolder,edge2"]
+	ElementLine [-50.00mil -50.00mil 250.00mil -50.00mil 10.00mil]
+	ElementArc [300.00mil -50.00mil 50.00mil 50.00mil 0 90 10.00mil]
+	ElementArc [300.00mil -50.00mil 50.00mil 50.00mil 90 90 10.00mil]
+	ElementLine [350.00mil -50.00mil 650.00mil -50.00mil 10.00mil]
+	ElementLine [650.00mil -50.00mil 650.00mil 250.00mil 10.00mil]
+	ElementLine [650.00mil 250.00mil -50.00mil 250.00mil 10.00mil]
+	ElementLine [-50.00mil 250.00mil -50.00mil -50.00mil 10.00mil]
+
+	)
