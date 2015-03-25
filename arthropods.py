@@ -53,12 +53,12 @@ def main():
         sys.exit(1)
 
     try:
-        variant = variant_map[sys.argv[1]]
+        variant = variant_map[variant_str]
     except KeyError:
         invalid_arguments("`%s' is not a valid variant" % variant_str)
 
     try:
-        pin_count = int(sys.argv[2])
+        pin_count = int(pin_count_str)
     except ValueError:
         invalid_arguments("`%s' is not an integer" % pin_count_str)
 
