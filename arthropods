@@ -125,8 +125,8 @@ def end():
 
 # Parameter handling
 
-STYLE_THICKENED, STYLE_DENT, STYLE_BOXED, \
-    STYLE_WSL_ARROW, STYLE_WSL_DENT, STYLE_PSL = xrange(6)
+STYLE_THICKENED, STYLE_DENT, STYLE_BOXED, STYLE_SOCKET, \
+    STYLE_WSL_ARROW, STYLE_WSL_DENT, STYLE_PSL = xrange(7)
 SHAPE_STRAIGHT, SHAPE_ZIGZAG, SHAPE_USHAPED, SHAPE_AB, SHAPE_BA = xrange(5)
 
 def invalid_arguments(message):
@@ -168,6 +168,7 @@ def main():
                 style = { 'thickened': STYLE_THICKENED,
                           'dent': STYLE_DENT,
                           'boxed': STYLE_BOXED,
+                          'socket': STYLE_SOCKET,
                           'wsl-arrow': STYLE_WSL_ARROW,
                           'wsl-dent': STYLE_WSL_DENT,
                           'psl': STYLE_PSL
@@ -231,7 +232,7 @@ def main():
             sys.stdout.write("Generate footprints for arthropodic components\n")
             sys.stdout.write("\n")
             sys.stdout.write(
-"      -s, --style=thickened|dent|boxed|wsl-arrow|wsl-dent|psl\n"
+"      -s, --style=thickened|dent|boxed|socket|wsl-arrow|wsl-dent|psl\n"
 "                        use this style to indicate pin 1 on the silk layer\n")
             sys.stdout.write("\n")
             sys.stdout.write(
@@ -337,12 +338,12 @@ def main():
         text_x, text_y, text_dir, text_scale = \
           '%.2fmil' % x0, '%.2fmil' % (y0 - 70.), 0, 100
 
-    if style == STYLE_PSL:
+    if style in [STYLE_SOCKET, STYLE_PSL]:
         if shape == SHAPE_STRAIGHT:
-            invalid_arguments("PSL only works with two pin rows")
+            invalid_arguments("This style only works with two pin rows")
         if row_distance != 100:
             invalid_arguments(
-                "PSL style does not work with a custom row distance")
+                "This style does not work with a custom row distance")
 
     start(None, name, name, name, 0., 0.,
           text_x, text_y, text_dir, text_scale, None)
@@ -428,6 +429,25 @@ def main():
         line('%.2fmil' % x0, '%.2fmil' % y0, '%.2fmil' % x1, '%.2fmil' % y0)
         line('-50mil', '50mil', '50mil', '50mil')
         line('50mil', '-50mil', '50mil', '50mil')
+    elif style == STYLE_SOCKET:
+        line('-30mil', '-50mil', '130mil', '-50mil')
+        for i in xrange(0, eff_pin_count):
+            line('-30mil', '%.2fmil' % (i * 100. - 50.),
+                 '-50mil', '%.2fmil' % (i * 100. - 30.))
+            line('-50mil', '%.2fmil' % (i * 100. - 30.),
+                 '-50mil', '%.2fmil' % (i * 100. + 30.))
+            line('-50mil', '%.2fmil' % (i * 100. + 30.),
+                 '-30mil', '%.2fmil' % (i * 100. + 50.))
+
+            line('130mil', '%.2fmil' % (i * 100. - 50.),
+                 '150mil', '%.2fmil' % (i * 100. - 30.))
+            line('150mil', '%.2fmil' % (i * 100. - 30.),
+                 '150mil', '%.2fmil' % (i * 100. + 30.))
+            line('150mil', '%.2fmil' % (i * 100. + 30.),
+                 '130mil', '%.2fmil' % (i * 100. + 50.))
+
+        line('-30mil', '%.2fmil' % (eff_pin_count * 100. - 50.),
+             '130mil', '%.2fmil' % (eff_pin_count * 100. - 50.))
     elif style == STYLE_WSL_ARROW:
         # arrow
         line('%.2fmil' % x0, '%.2fmil' % y0, '%.2fmil' % x1, '%.2fmil' % y0)
@@ -518,7 +538,7 @@ def main():
     else:
         raise ValueError
 
-    if style != STYLE_PSL:
+    if style not in [STYLE_SOCKET, STYLE_PSL]:
         line('%.2fmil' % x1, '%.2fmil' % y0, '%.2fmil' % x1, '%.2fmil' % y1)
         line('%.2fmil' % x1, '%.2fmil' % y1, '%.2fmil' % x0, '%.2fmil' % y1)
         line('%.2fmil' % x0, '%.2fmil' % y1, '%.2fmil' % x0, '%.2fmil' % y0)
