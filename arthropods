@@ -127,7 +127,7 @@ def end():
 
 STYLE_THICKENED, STYLE_DENT, STYLE_BOXED, \
     STYLE_WSL_ARROW, STYLE_WSL_DENT, STYLE_PSL = xrange(6)
-SHAPE_STRAIGHT, SHAPE_ZIGZAG, SHAPE_USHAPED = xrange(3)
+SHAPE_STRAIGHT, SHAPE_ZIGZAG, SHAPE_USHAPED, SHAPE_AB, SHAPE_BA = xrange(5)
 
 def invalid_arguments(message):
     sys.stderr.write("%s: %s\n" % (sys.argv[0], message))
@@ -141,18 +141,20 @@ def main():
 
     try:
         options, args = getopt.getopt(
-            sys.argv[1:], 's:ZUd:p:', ['style=',
-                                       'straight', 'zigzag', 'u-shaped',
-                                       'row-distance=', 'pad-length=',
-                                       'line-thickness=',
-                                       'pin-thickness=',
-                                       'pin-clearance=',
-                                       'pin-mask=',
-                                       'pin-drill=',
-                                       'pad-thickness=',
-                                       'pad-clearance=',
-                                       'pad-mask=',
-                                       'help', 'version'])
+            sys.argv[1:], 's:ZUABd:p:', [
+                'style=',
+                'straight', 'zigzag', 'u-shaped', 'ab', 'ba',
+                'row-distance=', 'pad-length=',
+                'line-thickness=',
+                'pin-thickness=',
+                'pin-clearance=',
+                'pin-mask=',
+                'pin-drill=',
+                'pad-thickness=',
+                'pad-clearance=',
+                'pad-mask=',
+                'help', 'version'
+            ])
     except getopt.GetoptError as e:
         invalid_arguments(e.msg)
 
@@ -178,6 +180,10 @@ def main():
             shape = SHAPE_ZIGZAG
         elif option in ['-U', '--u-shaped']:
             shape = SHAPE_USHAPED
+        elif option in ['-A', '--ab']:
+            shape = SHAPE_AB
+        elif option in ['-B', '--ba']:
+            shape = SHAPE_BA
         elif option in ['-d', '--row-distance']:
             try:
                 row_distance = int(value)
@@ -231,7 +237,9 @@ def main():
             sys.stdout.write(
 "      --straight        one straight row of pins\n"
 "      -Z, --zigzag      two rows of pins, numbered in zig-zag\n"
-"      -U, --u-shaped    two rows of pins, numbered in an U shape\n")
+"      -U, --u-shaped    two rows of pins, numbered in an U shape\n"
+"      -A, --ab          two rows of pins, numbered A1..An and B1..Bn\n"
+"      -B, --ba          two rows of pins, numbered B1..Bn and A1..An\n")
             sys.stdout.write("\n")
             sys.stdout.write(
 "      -d, --row-distance=DISTANCE\t[default: %d]\n"
@@ -291,17 +299,13 @@ def main():
         invalid_arguments("`%s' is not an integer" % pin_count_str)
 
     if shape != SHAPE_STRAIGHT and pin_count % 2 != 0:
-        invalid_arguments("Pin count for zigzag/u-shaped shape must be even")
+        invalid_arguments("Pin count for zigzag/u-shaped/AB/BA must be even")
 
     if shape == SHAPE_STRAIGHT:
         rows = 1
         row_distance = 0
-    elif shape == SHAPE_ZIGZAG:
-        rows = 2
-    elif shape == SHAPE_USHAPED:
-        rows = 2
     else:
-        raise ValueError
+        rows = 2
 
     eff_pin_count = pin_count // rows
 
@@ -346,14 +350,24 @@ def main():
     for i in xrange(0, eff_pin_count):
         y = '%.2fmil' % (i * 100)
         if i == 0:
-            maybe_square = ['square']
+            if shape == SHAPE_BA:
+                maybe_square = []
+                other_maybe_square = ['square']
+            else:
+                maybe_square = ['square']
+                other_maybe_square = []
         else:
             maybe_square = []
+            other_maybe_square = []
 
         if shape == SHAPE_ZIGZAG:
             i0, i1 = i * 2 + 1, i * 2 + 2
         if shape == SHAPE_USHAPED:
             i0, i1 = i + 1, pin_count - i
+        if shape == SHAPE_AB:
+            i0, i1 = 'A%d' % (i + 1), 'B%d' % (i + 1)
+        if shape == SHAPE_BA:
+            i0, i1 = 'B%d' % (i + 1), 'A%d' % (i + 1)
 
         if shape == SHAPE_STRAIGHT:
             pin(0., y, pin_thickness, pin_clearance, pin_mask, pin_drill,
@@ -367,13 +381,14 @@ def main():
                 pin_thickness, pin_clearance, pin_mask, pin_drill,
                 i0, flags = maybe_square)
             pin('%.2fmil' % width, y,
-                pin_thickness, pin_clearance, pin_mask, pin_drill, i1)
+                pin_thickness, pin_clearance, pin_mask, pin_drill,
+                i1, flags = other_maybe_square)
             pad('%.2fmil' % -pad_length, y, '0mil', y,
                 pad_thickness, pad_clearance, pad_mask,
                 i0, flags = ['onsolder'] + maybe_square)
             pad('%.2fmil' % width, y, '%.2fmil' % (width + pad_length), y,
                 pad_thickness, pad_clearance, pad_mask,
-                i1, flags = ['onsolder', 'edge2'])
+                i1, flags = ['onsolder', 'edge2'] + other_maybe_square)
         else:
             pin('0mil', y,
                 pin_thickness, pin_clearance, pin_mask, pin_drill,
@@ -383,11 +398,12 @@ def main():
                 pad_thickness, pad_clearance, pad_mask,
                 i0, flags = ['onsolder'] + maybe_square)
             pin('%.2fmil' % width, y,
-                pin_thickness, pin_clearance, pin_mask, pin_drill, i1)
+                pin_thickness, pin_clearance, pin_mask, pin_drill,
+                i1, flags = other_maybe_square)
             pad('%.2fmil' % (width - pad_length / 2.), y,
                 '%.2fmil' % (width + pad_length / 2.), y,
                 pad_thickness, pad_clearance, pad_mask,
-                i1, flags = ['onsolder', 'edge2'])
+                i1, flags = ['onsolder', 'edge2'] + other_maybe_square)
 
     # Paint outline
 
