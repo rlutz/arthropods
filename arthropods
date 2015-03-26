@@ -18,6 +18,8 @@
 
 import getopt, sys
 
+line_thickness = '10mil'
+
 pin_thickness = 1.5 # mm
 pin_clearance = 1. # mm
 pin_mask = 1.6 # mm
@@ -106,14 +108,14 @@ def pad(x0, y0, x1, y1, thickness, clearance, mask,
         format(thickness), format(clearance), format(mask),
         name, number, flags)
 
-def line(x0, y0, x1, y1, thickness):
+def line(x0, y0, x1, y1):
     print "\tElementLine [%s %s %s %s %s]" % (
-        format(x0), format(y0), format(x1), format(y1), format(thickness))
+        format(x0), format(y0), format(x1), format(y1), format(line_thickness))
 
-def arc(x, y, xradius, yradius, start_angle, delta_angle, thickness):
+def arc(x, y, xradius, yradius, start_angle, delta_angle):
     print "\tElementArc [%s %s %s %s %d %d %s]" % (
         format(x), format(y), format(xradius), format(yradius),
-        start_angle, delta_angle, format(thickness))
+        start_angle, delta_angle, format(line_thickness))
 
 def end():
     print
@@ -301,118 +303,118 @@ def main():
     if style == STYLE_THICKENED:
         # thick line
         line('%dmil' % x0, '%dmil' % y0,
-             '%dmil' % x1, '%dmil' % y0, '10mil')
+             '%dmil' % x1, '%dmil' % y0)
         line('%dmil' % x0, '%dmil' % (y0 + 5),
-             '%dmil' % x1, '%dmil' % (y0 + 5), '10mil')
+             '%dmil' % x1, '%dmil' % (y0 + 5))
         line('%dmil' % x0, '%dmil' % (y0 + 10),
-             '%dmil' % x1, '%dmil' % (y0 + 10), '10mil')
+             '%dmil' % x1, '%dmil' % (y0 + 10))
     elif style == STYLE_DENT:
         # dent
         line('%dmil' % x0, '%dmil' % y0,
-             '%dmil' % (width / 2 - 50), '%dmil' % y0, '10mil')
-        arc('%dmil' % (width / 2), '%dmil' % y0, '50mil', '50mil', 0, 90, '10mil')
-        arc('%dmil' % (width / 2), '%dmil' % y0, '50mil', '50mil', 90, 90, '10mil')
+             '%dmil' % (width / 2 - 50), '%dmil' % y0)
+        arc('%dmil' % (width / 2), '%dmil' % y0, '50mil', '50mil', 0, 90)
+        arc('%dmil' % (width / 2), '%dmil' % y0, '50mil', '50mil', 90, 90)
         line('%dmil' % (width / 2 + 50), '%dmil' % y0,
-             '%dmil' % x1, '%dmil' % y0, '10mil')
+             '%dmil' % x1, '%dmil' % y0)
     elif style == STYLE_BOXED:
         # box around pin 1
-        line('%dmil' % x0, '%dmil' % y0, '%dmil' % x1, '%dmil' % y0, '10mil')
-        line('-50mil', '50mil', '50mil', '50mil', '10mil')
-        line('50mil', '-50mil', '50mil', '50mil', '10mil')
+        line('%dmil' % x0, '%dmil' % y0, '%dmil' % x1, '%dmil' % y0)
+        line('-50mil', '50mil', '50mil', '50mil')
+        line('50mil', '-50mil', '50mil', '50mil')
     elif style == STYLE_WSL_ARROW:
         # arrow
-        line('%dmil' % x0, '%dmil' % y0, '%dmil' % x1, '%dmil' % y0, '10mil')
-        line('-125mil', '50mil', '-75mil', '0mil', '10mil')
-        line('-75mil', '0mil', '-125mil', '-50mil', '10mil')
+        line('%dmil' % x0, '%dmil' % y0, '%dmil' % x1, '%dmil' % y0)
+        line('-125mil', '50mil', '-75mil', '0mil')
+        line('-75mil', '0mil', '-125mil', '-50mil')
     elif style == STYLE_WSL_DENT:
         # dent
-        line('%dmil' % x0, '%dmil' % y0, '%dmil' % x1, '%dmil' % y0, '10mil')
+        line('%dmil' % x0, '%dmil' % y0, '%dmil' % x1, '%dmil' % y0)
         line('%dmil' % x0, '%dmil' % (height / 2 - 100),
-             '%dmil' % (x0 + 50), '%dmil' % (height / 2 - 100), '10mil')
+             '%dmil' % (x0 + 50), '%dmil' % (height / 2 - 100))
         line('%dmil' % (x0 + 50), '%dmil' % (height / 2 - 100),
-             '%dmil' % (x0 + 50), '%dmil' % (height / 2 + 100), '10mil')
+             '%dmil' % (x0 + 50), '%dmil' % (height / 2 + 100))
         line('%dmil' % (x0 + 50), '%dmil' % (height / 2 + 100),
-             '%dmil' % x0, '%dmil' % (height / 2 + 100), '10mil')
+             '%dmil' % x0, '%dmil' % (height / 2 + 100))
     elif style == STYLE_PSL:
         # bottom part
         pin('50mil', '%dmil' % (height + 231.10),
             '147.80mil', '121.37mil', '151.74mil', '118.11mil', 0)
         line('299.21mil', '%dmil' % (height + 427.75),
-             '929.13mil', '%dmil' % (height + 683.66), '10.00mil')
+             '929.13mil', '%dmil' % (height + 683.66))
         line('653.54mil', '%dmil' % (height + 408.07),
-             '968.50mil', '%dmil' % (height + 604.92), '10.00mil')
+             '968.50mil', '%dmil' % (height + 604.92))
         line('653.54mil', '%dmil' % (height + 152.16),
-             '456.69mil', '%dmil' % (height + 152.16), '10.00mil')
+             '456.69mil', '%dmil' % (height + 152.16))
         line('653.54mil', '%dmil' % (height + 408.07),
-             '653.54mil', '%dmil' % (height + 152.16), '10.00mil')
+             '653.54mil', '%dmil' % (height + 152.16))
         line('220.47mil', '%dmil' % (height + 427.76),
-             '653.54mil', '%dmil' % (height + 408.07), '10.00mil')
+             '653.54mil', '%dmil' % (height + 408.07))
         line('870.079mil', '%dmil' % (height + 486.80),
-             '850.40mil', '%dmil' % (height + 526.17), '10.00mil')
+             '850.40mil', '%dmil' % (height + 526.17))
         line('889.77mil', '%dmil' % (height + 427.75),
-             '870.079mil', '%dmil' % (height + 486.80), '10.00mil')
+             '870.079mil', '%dmil' % (height + 486.80))
         line('988.189mil', '%dmil' % (height + 506.49),
-             '889.77mil', '%dmil' % (height + 427.75), '10.00mil')
+             '889.77mil', '%dmil' % (height + 427.75))
         line('50mil', '%dmil' % (height + 216.10),
-             '50mil', '%dmil' % (height + 246.10), '10.00mil')
+             '50mil', '%dmil' % (height + 246.10))
         line('35.00mil', '%dmil' % (height + 231.10),
-             '65.00mil', '%dmil' % (height + 231.10), '10.00mil')
+             '65.00mil', '%dmil' % (height + 231.10))
         line('988.189mil', '%dmil' % (height + 624.60),
-             '988.189mil', '%dmil' % (height + 506.49), '10.00mil')
+             '988.189mil', '%dmil' % (height + 506.49))
         line('988.189mil', '%dmil' % (height + 624.60),
-             '968.50mil', '%dmil' % (height + 604.92), '10.00mil')
+             '968.50mil', '%dmil' % (height + 604.92))
         arc('50mil', '%dmil' % (height + 231.10),
-            '125.00mil', '125.00mil', 35, 290, '10.00mil')
+            '125.00mil', '125.00mil', 35, 290)
         arc('929.13mil', '%dmil' % (height + 624.60),
-            '59.06mil', '59.06mil', 90, 90, '10.00mil')
+            '59.06mil', '59.06mil', 90, 90)
 
         # top part
         pin('50mil', '-231.10mil', '147.80mil', '123.37mil', '151.74mil', '118.11mil', 0)
-        line('299.21mil', '-427.75mil', '929.13mil', '-683.66mil', '10.00mil')
-        line('653.54mil', '-408.07mil', '968.50mil', '-604.92mil', '10.00mil')
-        line('653.54mil', '-152.16mil', '456.69mil', '-152.16mil', '10.00mil')
-        line('653.54mil', '-408.07mil', '653.54mil', '-152.16mil', '10.00mil')
-        line('220.47mil', '-427.76mil', '653.54mil', '-408.07mil', '10.00mil')
-        line('870.079mil', '-486.80mil', '850.40mil', '-526.17mil', '10.00mil')
-        line('889.77mil', '-427.75mil', '870.079mil', '-486.80mil', '10.00mil')
-        line('988.189mil', '-506.49mil', '889.77mil', '-427.75mil', '10.00mil')
-        line('50mil', '-216.10mil', '50mil', '-246.10mil', '10.00mil')
-        line('35.00mil', '-231.10mil', '65.00mil', '-231.10mil', '10.00mil')
-        line('988.189mil', '-624.60mil', '988.189mil', '-506.49mil', '10.00mil')
-        line('988.189mil', '-624.60mil', '968.50mil', '-604.92mil', '10.00mil')
-        arc('50mil', '-231.10mil', '125.00mil', '125.00mil', 35, 290, '10.00mil')
-        arc('929.13mil', '-624.60mil', '59.06mil', '59.06mil', 180, 90, '10.00mil')
+        line('299.21mil', '-427.75mil', '929.13mil', '-683.66mil')
+        line('653.54mil', '-408.07mil', '968.50mil', '-604.92mil')
+        line('653.54mil', '-152.16mil', '456.69mil', '-152.16mil')
+        line('653.54mil', '-408.07mil', '653.54mil', '-152.16mil')
+        line('220.47mil', '-427.76mil', '653.54mil', '-408.07mil')
+        line('870.079mil', '-486.80mil', '850.40mil', '-526.17mil')
+        line('889.77mil', '-427.75mil', '870.079mil', '-486.80mil')
+        line('988.189mil', '-506.49mil', '889.77mil', '-427.75mil')
+        line('50mil', '-216.10mil', '50mil', '-246.10mil')
+        line('35.00mil', '-231.10mil', '65.00mil', '-231.10mil')
+        line('988.189mil', '-624.60mil', '988.189mil', '-506.49mil')
+        line('988.189mil', '-624.60mil', '968.50mil', '-604.92mil')
+        arc('50mil', '-231.10mil', '125.00mil', '125.00mil', 35, 290)
+        arc('929.13mil', '-624.60mil', '59.06mil', '59.06mil', 180, 90)
 
         # box
         line('-55.12mil', '%dmil' % (height + 428.15),
-             '259.84mil', '%dmil' % (height + 428.15), '10.00mil')
+             '259.84mil', '%dmil' % (height + 428.15))
         line('-55.12mil', '-427.76mil', '-55.12mil',
-             '%dmil' % (height + 428.15), '10.00mil')
+             '%dmil' % (height + 428.15))
         line('456.69mil', '%dmil' % (height + 418.32),
-             '456.69mil', '-417.91mil', '10.00mil')
+             '456.69mil', '-417.91mil')
         line('220.47mil', '-427.76mil',
-             '-55.12mil', '-427.76mil', '10.00mil')
+             '-55.12mil', '-427.76mil')
 
         # mark on the left
-        line('-75.00mil', '0mil', '-125.00mil', '-50.00mil', '10.00mil')
-        line('-125.00mil', '50.00mil', '-75.00mil', '0mil', '10.00mil')
+        line('-75.00mil', '0mil', '-125.00mil', '-50.00mil')
+        line('-125.00mil', '50.00mil', '-75.00mil', '0mil')
 
         # mark in the middle
         line('50mil', '%dmil' % (height / 2 - 50),
-             '50mil', '%dmil' % (height / 2), '10.00mil')
+             '50mil', '%dmil' % (height / 2))
         line('50mil', '%dmil' % (height / 2),
-             '100.00mil', '%dmil' % (height / 2), '10.00mil')
+             '100.00mil', '%dmil' % (height / 2))
         line('50mil', '%dmil' % (height / 2 + 50),
-             '50mil', '%dmil' % (height / 2), '10.00mil')
+             '50mil', '%dmil' % (height / 2))
         line('50mil', '%dmil' % (height / 2),
-             '0mil', '%dmil' % (height / 2), '10.00mil')
+             '0mil', '%dmil' % (height / 2))
     else:
         raise ValueError
 
     if style != STYLE_PSL:
-        line('%dmil' % x1, '%dmil' % y0, '%dmil' % x1, '%dmil' % y1, '10mil')
-        line('%dmil' % x1, '%dmil' % y1, '%dmil' % x0, '%dmil' % y1, '10mil')
-        line('%dmil' % x0, '%dmil' % y1, '%dmil' % x0, '%dmil' % y0, '10mil')
+        line('%dmil' % x1, '%dmil' % y0, '%dmil' % x1, '%dmil' % y1)
+        line('%dmil' % x1, '%dmil' % y1, '%dmil' % x0, '%dmil' % y1)
+        line('%dmil' % x0, '%dmil' % y1, '%dmil' % x0, '%dmil' % y0)
 
     end()
 
