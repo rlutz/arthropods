@@ -171,6 +171,7 @@ def main():
                 invalid_arguments("`%s' is not an integer" % value)
         elif option == '--help':
             sys.stdout.write("Usage: %s NAME PIN_COUNT\n" % sys.argv[0])
+            sys.stdout.write("Generate footprints for arthropodic components\n")
             sys.stdout.write("\n")
             sys.stdout.write(
 "      -s, --style=thickened|dent|boxed|wsl-arrow|wsl-dent|psl\n"
