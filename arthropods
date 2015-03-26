@@ -20,14 +20,14 @@ import getopt, sys
 
 line_thickness = '10mil'
 
-pin_thickness = 1.5 # mm
-pin_clearance = 1. # mm
-pin_mask = 1.6 # mm
-pin_drill = 1. # mm
+pin_thickness = '1.5mm'
+pin_clearance = '1.mm'
+pin_mask = '1.6mm'
+pin_drill = '1.mm'
 
-pad_thickness = 1.492 # mm
-pad_clearance = 1. # mm
-pad_mask = 1.59 # mm
+pad_thickness = '1.492mm'
+pad_clearance = '1.mm'
+pad_mask = '1.59mm'
 
 # Formatting mm/mil lengths
 
