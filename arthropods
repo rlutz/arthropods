@@ -135,10 +135,24 @@ def invalid_arguments(message):
     sys.exit(1)
 
 def main():
+    global pad_length
+    global line_thickness, pin_thickness, pin_clearance, pin_mask, pin_drill, \
+           pad_thickness, pad_clearance, pad_mask
+
     try:
         options, args = getopt.getopt(
-            sys.argv[1:], 's:ZUd:', ['style=', 'straight', 'zigzag', 'u-shaped',
-                                     'row-distance=', 'help', 'version'])
+            sys.argv[1:], 's:ZUd:p:', ['style=',
+                                       'straight', 'zigzag', 'u-shaped',
+                                       'row-distance=', 'pad-length=',
+                                       'line-thickness=',
+                                       'pin-thickness=',
+                                       'pin-clearance=',
+                                       'pin-mask=',
+                                       'pin-drill=',
+                                       'pad-thickness=',
+                                       'pad-clearance=',
+                                       'pad-mask=',
+                                       'help', 'version'])
     except getopt.GetoptError as e:
         invalid_arguments(e.msg)
 
@@ -169,6 +183,43 @@ def main():
                 row_distance = int(value)
             except ValueError:
                 invalid_arguments("`%s' is not an integer" % value)
+        elif option in ['-p', '--pad-length']:
+            try:
+                pad_length = float(value)
+            except ValueError:
+                invalid_arguments("`%s' is not a floating point number" % value)
+        elif option == '--line-thickness':
+            if not value.endswith('mm') and not value.endswith('mil'):
+                invalid_arguments("`%s' is not a length in mm or mil" % value)
+            line_thickness = value
+        elif option == '--pin-thickness':
+            if not value.endswith('mm') and not value.endswith('mil'):
+                invalid_arguments("`%s' is not a length in mm or mil" % value)
+            pin_thickness = value
+        elif option == '--pin-clearance':
+            if not value.endswith('mm') and not value.endswith('mil'):
+                invalid_arguments("`%s' is not a length in mm or mil" % value)
+            pin_clearance = value
+        elif option == '--pin-mask':
+            if not value.endswith('mm') and not value.endswith('mil'):
+                invalid_arguments("`%s' is not a length in mm or mil" % value)
+            pin_mask = value
+        elif option == '--pin-drill':
+            if not value.endswith('mm') and not value.endswith('mil'):
+                invalid_arguments("`%s' is not a length in mm or mil" % value)
+            pin_drill = value
+        elif option == '--pad-thickness':
+            if not value.endswith('mm') and not value.endswith('mil'):
+                invalid_arguments("`%s' is not a length in mm or mil" % value)
+            pad_thickness = value
+        elif option == '--pad-clearance':
+            if not value.endswith('mm') and not value.endswith('mil'):
+                invalid_arguments("`%s' is not a length in mm or mil" % value)
+            pad_clearance = value
+        elif option == '--pad-mask':
+            if not value.endswith('mm') and not value.endswith('mil'):
+                invalid_arguments("`%s' is not a length in mm or mil" % value)
+            pad_mask = value
         elif option == '--help':
             sys.stdout.write("Usage: %s NAME PIN_COUNT\n" % sys.argv[0])
             sys.stdout.write("Generate footprints for arthropodic components\n")
@@ -180,8 +231,27 @@ def main():
             sys.stdout.write(
 "      --straight        one straight row of pins\n"
 "      -Z, --zigzag      two rows of pins, numbered in zig-zag\n"
-"      -U, --u-shaped    two rows of pins, numbered in an U shape\n"
-"      -d, --row-distance  distance between the rows, as a number in mils\n")
+"      -U, --u-shaped    two rows of pins, numbered in an U shape\n")
+            sys.stdout.write("\n")
+            sys.stdout.write(
+"      -d, --row-distance=DISTANCE\t[default: %d]\n"
+"                        distance between the rows, as a number in mils\n"
+"      -p, --pad-length=LENGTH\t\t[default: %.2f]\n"
+"                        length of the solder pads, as a number in mils\n"
+                % (row_distance, pad_length))
+            sys.stdout.write("\n")
+            sys.stdout.write(
+"      --line-thickness=Xmm|Xmil\t[default: %s]\n"
+"      --pin-thickness=Xmm|Xmil\t[default: %s]\n"
+"      --pin-clearance=Xmm|Xmil\t[default: %s]\n"
+"      --pin-mask=Xmm|Xmil\t[default: %s]\n"
+"      --pin-drill=Xmm|Xmil\t[default: %s]\n"
+"      --pad-thickness=Xmm|Xmil\t[default: %s]\n"
+"      --pad-clearance=Xmm|Xmil\t[default: %s]\n"
+"      --pad-mask=Xmm|Xmil\t[default: %s]\n"
+                % (line_thickness,
+                   pin_thickness, pin_clearance, pin_mask, pin_drill,
+                   pad_thickness, pad_clearance, pad_mask))
             sys.stdout.write("\n")
             sys.stdout.write(
 "      --help            give this help\n"
