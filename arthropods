@@ -29,6 +29,8 @@ pad_thickness = '1.492mm'
 pad_clearance = '1.mm'
 pad_mask = '1.59mm'
 
+pad_length = 50.
+
 # Formatting mm/mil lengths
 
 def format_number(length, unit):
@@ -270,31 +272,34 @@ def main():
         if shape == SHAPE_STRAIGHT:
             pin(0., y, pin_thickness, pin_clearance, pin_mask, pin_drill,
                 i + 1, flags = maybe_square)
-            pad('-25mil', y, '25mil', y,
+            pad('%.2fmil' % (-pad_length / 2.), y,
+                '%.2fmil' % (pad_length / 2.), y,
                 pad_thickness, pad_clearance, pad_mask,
                 i + 1, flags = ['onsolder'] + maybe_square)
-        elif row_distance < 150:
+        elif row_distance < 100 + pad_length:
             pin('0mil', y,
                 pin_thickness, pin_clearance, pin_mask, pin_drill,
                 i0, flags = maybe_square)
             pin('%.2fmil' % width, y,
                 pin_thickness, pin_clearance, pin_mask, pin_drill, i1)
-            pad('-50mil', y, '0mil', y,
+            pad('%.2fmil' % -pad_length, y, '0mil', y,
                 pad_thickness, pad_clearance, pad_mask,
                 i0, flags = ['onsolder'] + maybe_square)
-            pad('%.2fmil' % width, y, '%.2fmil' % (width + 50), y,
+            pad('%.2fmil' % width, y, '%.2fmil' % (width + pad_length), y,
                 pad_thickness, pad_clearance, pad_mask,
                 i1, flags = ['onsolder', 'edge2'])
         else:
             pin('0mil', y,
                 pin_thickness, pin_clearance, pin_mask, pin_drill,
                 i0, flags = maybe_square)
-            pad('-25mil', y, '25mil', y,
+            pad('%.2fmil' % (-pad_length / 2.), y,
+                '%.2fmil' % (pad_length / 2.), y,
                 pad_thickness, pad_clearance, pad_mask,
                 i0, flags = ['onsolder'] + maybe_square)
             pin('%.2fmil' % width, y,
                 pin_thickness, pin_clearance, pin_mask, pin_drill, i1)
-            pad('%.2fmil' % (width - 25.), y, '%.2fmil' % (width + 25.), y,
+            pad('%.2fmil' % (width - pad_length / 2.), y,
+                '%.2fmil' % (width + pad_length / 2.), y,
                 pad_thickness, pad_clearance, pad_mask,
                 i1, flags = ['onsolder', 'edge2'])
 
