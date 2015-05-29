@@ -3,9 +3,9 @@
 for pin_count in 6 16
 do	./arthropods -s thickened SIP${pin_count} $pin_count \
 	  > footprints/SIP${pin_count}.fp
-	./arthropods -U -d 300 -s dent DIP${pin_count} $pin_count \
+	./arthropods -U -d 300mil -s dent DIP${pin_count} $pin_count \
 	  > footprints/DIP${pin_count}.fp
-	./arthropods -U -d 600 -s dent DIP${pin_count}_wide $pin_count \
+	./arthropods -U -d 600mil -s dent DIP${pin_count}_wide $pin_count \
 	  > footprints/DIPwide${pin_count}.fp
 	./arthropods -s thickened 1x${pin_count}PIN $pin_count \
 	  > footprints/1xPIN${pin_count}.fp

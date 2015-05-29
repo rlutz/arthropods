@@ -18,49 +18,34 @@
 
 import getopt, sys
 
-line_thickness = '10mil'
+# Lengths are internally represented as an integer of nanometers.
 
-pin_thickness = '1.5mm'
-pin_clearance = '1.4mm'
-pin_mask = '1.7mm'
-pin_drill = '1.mm'
+def mm(x): return int(x * 1000000)
+def mil(x): return int(x * 25400)
 
-pad_thickness = '1.492mm'
-pad_clearance = '1.4mm'
-pad_mask = '1.69mm'
+line_thickness = mil(10.)
 
-pad_length = 50.
+pin_thickness = mm(1.5)
+pin_clearance = mm(1.4)
+pin_mask = mm(1.7)
+pin_drill = mm(1.)
 
-# Formatting mm/mil lengths
+pad_thickness = mm(1.492)
+pad_clearance = mm(1.4)
+pad_mask = mm(1.69)
 
-def format_number(length, unit):
-    if isinstance(length, str):
-        if '.' in length:
-            length = float(length)
-        else:
-            length = int(length)
-    if isinstance(length, int):
-        if length == 0:
-            return "0.0000"
-        return "%d.00%s" % (length, unit)
-    if isinstance(length, float):
-        if length == 0.:
-            return "0.0000"
-        if unit == 'mm':
-            return "%.4f%s" % (length, unit)
-        if unit == 'mil':
-            return "%.2f%s" % (length, unit)
-    raise ValueError
+pad_length = mil(50.)
 
 def format(length):
-    if isinstance(length, int) or isinstance(length, float):
-        return format_number(length, 'mm')
-    if isinstance(length, str):
-        if length.endswith("mm"):
-            return format_number(length[:-2], length[-2:])
-        if length.endswith("mil"):
-            return format_number(length[:-3], length[-3:])
-    raise ValueError
+    """Format a number of nanometers to a string in mm or mil."""
+    if not isinstance(length, int):
+        raise ValueError
+    if length == 0:
+        return '0.0000'
+    if length % 127 == 0:
+        return '%.2f%s' % (length / 25400., 'mil')
+    else:
+        return '%.4f%s' % (length / 1000000., 'mm')
 
 # Output
 
@@ -134,6 +119,17 @@ def invalid_arguments(message):
     sys.stderr.write("Try `%s --help' for more information.\n" % sys.argv[0])
     sys.exit(1)
 
+def parse(length):
+    """Parse a string in mm or mil to a number of nanometers."""
+    unit = next(unit for unit in ['mm', 'mil', ''] if length.endswith(unit))
+    if not isinstance(length, basestring) or not unit:
+        invalid_arguments("`%s' is not a length in mm or mil" % length)
+    if '.' in length:
+        length = float(length[:-len(unit)])
+    else:
+        length = int(length[:-len(unit)])
+    return { 'mm': mm, 'mil': mil }[unit](length)
+
 def main():
     global pad_length
     global line_thickness, pin_thickness, pin_clearance, pin_mask, pin_drill, \
@@ -160,7 +156,7 @@ def main():
 
     style = STYLE_THICKENED
     shape = SHAPE_STRAIGHT
-    row_distance = 100
+    row_distance = mil(100.)
 
     for option, value in options:
         if option in ['-s', '--style']:
@@ -186,47 +182,25 @@ def main():
         elif option in ['-B', '--ba']:
             shape = SHAPE_BA
         elif option in ['-d', '--row-distance']:
-            try:
-                row_distance = int(value)
-            except ValueError:
-                invalid_arguments("`%s' is not an integer" % value)
+            row_distance = parse(value)
         elif option in ['-p', '--pad-length']:
-            try:
-                pad_length = float(value)
-            except ValueError:
-                invalid_arguments("`%s' is not a floating point number" % value)
+            pad_length = parse(value)
         elif option == '--line-thickness':
-            if not value.endswith('mm') and not value.endswith('mil'):
-                invalid_arguments("`%s' is not a length in mm or mil" % value)
-            line_thickness = value
+            line_thickness = parse(value)
         elif option == '--pin-thickness':
-            if not value.endswith('mm') and not value.endswith('mil'):
-                invalid_arguments("`%s' is not a length in mm or mil" % value)
-            pin_thickness = value
+            pin_thickness = parse(value)
         elif option == '--pin-clearance':
-            if not value.endswith('mm') and not value.endswith('mil'):
-                invalid_arguments("`%s' is not a length in mm or mil" % value)
-            pin_clearance = value
+            pin_clearance = parse(value)
         elif option == '--pin-mask':
-            if not value.endswith('mm') and not value.endswith('mil'):
-                invalid_arguments("`%s' is not a length in mm or mil" % value)
-            pin_mask = value
+            pin_mask = parse(value)
         elif option == '--pin-drill':
-            if not value.endswith('mm') and not value.endswith('mil'):
-                invalid_arguments("`%s' is not a length in mm or mil" % value)
-            pin_drill = value
+            pin_drill = parse(value)
         elif option == '--pad-thickness':
-            if not value.endswith('mm') and not value.endswith('mil'):
-                invalid_arguments("`%s' is not a length in mm or mil" % value)
-            pad_thickness = value
+            pad_thickness = parse(value)
         elif option == '--pad-clearance':
-            if not value.endswith('mm') and not value.endswith('mil'):
-                invalid_arguments("`%s' is not a length in mm or mil" % value)
-            pad_clearance = value
+            pad_clearance = parse(value)
         elif option == '--pad-mask':
-            if not value.endswith('mm') and not value.endswith('mil'):
-                invalid_arguments("`%s' is not a length in mm or mil" % value)
-            pad_mask = value
+            pad_mask = parse(value)
         elif option == '--help':
             sys.stdout.write("Usage: %s NAME PIN_COUNT\n" % sys.argv[0])
             sys.stdout.write("Generate footprints for arthropodic components\n")
@@ -243,11 +217,11 @@ def main():
 "      -B, --ba          two rows of pins, numbered B1..Bn and A1..An\n")
             sys.stdout.write("\n")
             sys.stdout.write(
-"      -d, --row-distance=DISTANCE\t[default: %d]\n"
-"                        distance between the rows, as a number in mils\n"
-"      -p, --pad-length=LENGTH\t\t[default: %.2f]\n"
-"                        length of the solder pads, as a number in mils\n"
-                % (row_distance, pad_length))
+"      -d, --row-distance=DISTANCE\t[default: %s]\n"
+"                        distance between the rows\n"
+"      -p, --pad-length=LENGTH\t\t[default: %s]\n"
+"                        length of the solder pads\n"
+                % (format(row_distance), format(pad_length)))
             sys.stdout.write("\n")
             sys.stdout.write(
 "      --line-thickness=Xmm|Xmil\t[default: %s]\n"
@@ -258,9 +232,11 @@ def main():
 "      --pad-thickness=Xmm|Xmil\t[default: %s]\n"
 "      --pad-clearance=Xmm|Xmil\t[default: %s]\n"
 "      --pad-mask=Xmm|Xmil\t[default: %s]\n"
-                % (line_thickness,
-                   pin_thickness, pin_clearance, pin_mask, pin_drill,
-                   pad_thickness, pad_clearance, pad_mask))
+                % (format(line_thickness),
+                   format(pin_thickness), format(pin_clearance),
+                     format(pin_mask), format(pin_drill),
+                   format(pad_thickness), format(pad_clearance),
+                     format(pad_mask)))
             sys.stdout.write("\n")
             sys.stdout.write(
 "      --help            give this help\n"
@@ -312,44 +288,44 @@ def main():
 
     # Calculate dimensions
 
-    width = float(row_distance)
-    height = (eff_pin_count - 1) * 100
+    width = row_distance
+    height = (eff_pin_count - 1) * mil(100.)
 
     if style in [STYLE_WSL_ARROW, STYLE_WSL_DENT]:
-        x_offset = 125.
-        y_offset = 200.
+        x_offset = mil(125.)
+        y_offset = mil(200.)
     else:
-        x_offset = 50.
-        y_offset = 50.
+        x_offset = mil(50.)
+        y_offset = mil(50.)
 
     x0 = -x_offset; x1 = width + x_offset
     y0 = -y_offset; y1 = height + y_offset
 
     if style == STYLE_DENT:
         text_x, text_y, text_dir, text_scale = \
-          '%.2fmil' % (width / 2 + 30.), '25mil', 3, 100
+          width / 2 + mil(30.), mil(25.), 3, 100
     elif style == STYLE_PSL:
         text_x, text_y, text_dir, text_scale = \
-          '-68.11mil', '-506.69mil', 0, 100
+          mil(-68.11), mil(-506.69), 0, 100
     elif shape == SHAPE_STRAIGHT:
         text_x, text_y, text_dir, text_scale = \
-          '%.2fmil' % (x1 + 70.), '%.2fmil' % (y0 + 5.), 3, 100
+          x1 + mil(70.), y0 + mil(5.), 3, 100
     else:
         text_x, text_y, text_dir, text_scale = \
-          '%.2fmil' % x0, '%.2fmil' % (y0 - 70.), 0, 100
+          x0, y0 - mil(70.), 0, 100
 
     if style in [STYLE_SOCKET, STYLE_PSL]:
         if shape == SHAPE_STRAIGHT:
             invalid_arguments("This style only works with two pin rows")
-        if row_distance != 100:
+        if row_distance != mil(100.):
             invalid_arguments(
                 "This style does not work with a custom row distance")
 
-    start(None, name, name, name, 0., 0.,
+    start(None, name, name, name, 0, 0,
           text_x, text_y, text_dir, text_scale, None)
 
     for i in xrange(0, eff_pin_count):
-        y = '%.2fmil' % (i * 100)
+        y = i * mil(100.)
         if i == 0:
             if shape == SHAPE_BA:
                 maybe_square = []
@@ -371,38 +347,35 @@ def main():
             i0, i1 = 'B%d' % (i + 1), 'A%d' % (i + 1)
 
         if shape == SHAPE_STRAIGHT:
-            pin(0., y, pin_thickness, pin_clearance, pin_mask, pin_drill,
+            pin(0, y, pin_thickness, pin_clearance, pin_mask, pin_drill,
                 i + 1, flags = maybe_square)
-            pad('%.2fmil' % (-pad_length / 2.), y,
-                '%.2fmil' % (pad_length / 2.), y,
+            pad(-pad_length / 2, y, pad_length / 2, y,
                 pad_thickness, pad_clearance, pad_mask,
                 i + 1, flags = ['onsolder'] + maybe_square)
-        elif row_distance < 100 + pad_length:
-            pin('0mil', y,
+        elif row_distance < mil(100.) + pad_length:
+            pin(0, y,
                 pin_thickness, pin_clearance, pin_mask, pin_drill,
                 i0, flags = maybe_square)
-            pin('%.2fmil' % width, y,
+            pin(width, y,
                 pin_thickness, pin_clearance, pin_mask, pin_drill,
                 i1, flags = other_maybe_square)
-            pad('%.2fmil' % -pad_length, y, '0mil', y,
+            pad(-pad_length, y, 0, y,
                 pad_thickness, pad_clearance, pad_mask,
                 i0, flags = ['onsolder'] + maybe_square)
-            pad('%.2fmil' % width, y, '%.2fmil' % (width + pad_length), y,
+            pad(width, y, width + pad_length, y,
                 pad_thickness, pad_clearance, pad_mask,
                 i1, flags = ['onsolder', 'edge2'] + other_maybe_square)
         else:
-            pin('0mil', y,
+            pin(0, y,
                 pin_thickness, pin_clearance, pin_mask, pin_drill,
                 i0, flags = maybe_square)
-            pad('%.2fmil' % (-pad_length / 2.), y,
-                '%.2fmil' % (pad_length / 2.), y,
+            pad(-pad_length / 2, y, pad_length / 2, y,
                 pad_thickness, pad_clearance, pad_mask,
                 i0, flags = ['onsolder'] + maybe_square)
-            pin('%.2fmil' % width, y,
+            pin(width, y,
                 pin_thickness, pin_clearance, pin_mask, pin_drill,
                 i1, flags = other_maybe_square)
-            pad('%.2fmil' % (width - pad_length / 2.), y,
-                '%.2fmil' % (width + pad_length / 2.), y,
+            pad(width - pad_length / 2, y, width + pad_length / 2, y,
                 pad_thickness, pad_clearance, pad_mask,
                 i1, flags = ['onsolder', 'edge2'] + other_maybe_square)
 
@@ -410,142 +383,130 @@ def main():
 
     if style == STYLE_THICKENED:
         # thick line
-        line('%.2fmil' % x0, '%.2fmil' % y0,
-             '%.2fmil' % x1, '%.2fmil' % y0)
-        line('%.2fmil' % x0, '%.2fmil' % (y0 + 5),
-             '%.2fmil' % x1, '%.2fmil' % (y0 + 5))
-        line('%.2fmil' % x0, '%.2fmil' % (y0 + 10),
-             '%.2fmil' % x1, '%.2fmil' % (y0 + 10))
+        line(x0, y0, x1, y0)
+        line(x0, y0 + mil(5.), x1, y0 + mil(5.))
+        line(x0, y0 + mil(10.), x1, y0 + mil(10.))
     elif style == STYLE_DENT:
         # dent
-        line('%.2fmil' % x0, '%.2fmil' % y0,
-             '%.2fmil' % (width / 2 - 50), '%.2fmil' % y0)
-        arc('%.2fmil' % (width / 2), '%.2fmil' % y0, '50mil', '50mil', 0, 90)
-        arc('%.2fmil' % (width / 2), '%.2fmil' % y0, '50mil', '50mil', 90, 90)
-        line('%.2fmil' % (width / 2 + 50), '%.2fmil' % y0,
-             '%.2fmil' % x1, '%.2fmil' % y0)
+        line(x0, y0, width / 2 - mil(50.), y0)
+        arc(width / 2, y0, mil(50.), mil(50.), 0, 90)
+        arc(width / 2, y0, mil(50.), mil(50.), 90, 90)
+        line(width / 2 + mil(50.), y0, x1, y0)
     elif style == STYLE_BOXED:
         # box around pin 1
-        line('%.2fmil' % x0, '%.2fmil' % y0, '%.2fmil' % x1, '%.2fmil' % y0)
+        line(x0, y0, x1, y0)
         if shape == SHAPE_BA:
-            line('150mil', '50mil', '50mil', '50mil')
+            line(mil(150.), mil(50.), mil(50.), mil(50.))
         else:
-            line('-50mil', '50mil', '50mil', '50mil')
-        line('50mil', '-50mil', '50mil', '50mil')
+            line(mil(-50.), mil(50.), mil(50.), mil(50.))
+        line(mil(50.), mil(-50.), mil(50.), mil(50.))
     elif style == STYLE_SOCKET:
-        line('-30mil', '-50mil', '130mil', '-50mil')
+        line(mil(-30.), mil(-50.), mil(130.), mil(-50.))
         for i in xrange(0, eff_pin_count):
-            line('-30mil', '%.2fmil' % (i * 100. - 50.),
-                 '-50mil', '%.2fmil' % (i * 100. - 30.))
-            line('-50mil', '%.2fmil' % (i * 100. - 30.),
-                 '-50mil', '%.2fmil' % (i * 100. + 30.))
-            line('-50mil', '%.2fmil' % (i * 100. + 30.),
-                 '-30mil', '%.2fmil' % (i * 100. + 50.))
+            line(mil(-30.), i * mil(100.) - mil(50.),
+                 mil(-50.), i * mil(100.) - mil(30.))
+            line(mil(-50.), i * mil(100.) - mil(30.),
+                 mil(-50.), i * mil(100.) + mil(30.))
+            line(mil(-50.), i * mil(100.) + mil(30.),
+                 mil(-30.), i * mil(100.) + mil(50.))
 
-            line('130mil', '%.2fmil' % (i * 100. - 50.),
-                 '150mil', '%.2fmil' % (i * 100. - 30.))
-            line('150mil', '%.2fmil' % (i * 100. - 30.),
-                 '150mil', '%.2fmil' % (i * 100. + 30.))
-            line('150mil', '%.2fmil' % (i * 100. + 30.),
-                 '130mil', '%.2fmil' % (i * 100. + 50.))
+            line(mil(130.), i * mil(100.) - mil(50.),
+                 mil(150.), i * mil(100.) - mil(30.))
+            line(mil(150.), i * mil(100.) - mil(30.),
+                 mil(150.), i * mil(100.) + mil(30.))
+            line(mil(150.), i * mil(100.) + mil(30.),
+                 mil(130.), i * mil(100.) + mil(50.))
 
-        line('-30mil', '%.2fmil' % (eff_pin_count * 100. - 50.),
-             '130mil', '%.2fmil' % (eff_pin_count * 100. - 50.))
+        line(mil(-30.), eff_pin_count * mil(100.) - mil(50.),
+             mil(130.), eff_pin_count * mil(100.) - mil(50.))
     elif style == STYLE_WSL_ARROW:
         # arrow
-        line('%.2fmil' % x0, '%.2fmil' % y0, '%.2fmil' % x1, '%.2fmil' % y0)
-        line('-125mil', '50mil', '-75mil', '0mil')
-        line('-75mil', '0mil', '-125mil', '-50mil')
+        line(x0, y0, x1, y0)
+        line(mil(-125.), mil(50.), mil(-75.), mil(0.))
+        line(mil(-75.), mil(0.), mil(-125.), mil(-50.))
     elif style == STYLE_WSL_DENT:
         # dent
-        line('%.2fmil' % x0, '%.2fmil' % y0, '%.2fmil' % x1, '%.2fmil' % y0)
-        line('%.2fmil' % x0, '%.2fmil' % (height / 2 - 100),
-             '%.2fmil' % (x0 + 50), '%.2fmil' % (height / 2 - 100))
-        line('%.2fmil' % (x0 + 50), '%.2fmil' % (height / 2 - 100),
-             '%.2fmil' % (x0 + 50), '%.2fmil' % (height / 2 + 100))
-        line('%.2fmil' % (x0 + 50), '%.2fmil' % (height / 2 + 100),
-             '%.2fmil' % x0, '%.2fmil' % (height / 2 + 100))
+        line(x0, y0, x1, y0)
+        line(x0, height / 2 - mil(100.),
+             x0 + mil(50.), height / 2 - mil(100.))
+        line(x0 + mil(50.), height / 2 - mil(100.),
+             x0 + mil(50.), height / 2 + mil(100.))
+        line(x0 + mil(50.), height / 2 + mil(100.),
+             x0, height / 2 + mil(100.))
     elif style == STYLE_PSL:
         # bottom part
-        pin('50mil', '%.2fmil' % (height + 231.10),
-            '147.80mil', '121.37mil', '151.74mil', '118.11mil', 0)
-        line('299.21mil', '%.2fmil' % (height + 427.75),
-             '929.13mil', '%.2fmil' % (height + 683.66))
-        line('653.54mil', '%.2fmil' % (height + 408.07),
-             '968.50mil', '%.2fmil' % (height + 604.92))
-        line('653.54mil', '%.2fmil' % (height + 152.16),
-             '456.69mil', '%.2fmil' % (height + 152.16))
-        line('653.54mil', '%.2fmil' % (height + 408.07),
-             '653.54mil', '%.2fmil' % (height + 152.16))
-        line('220.47mil', '%.2fmil' % (height + 427.76),
-             '653.54mil', '%.2fmil' % (height + 408.07))
-        line('870.079mil', '%.2fmil' % (height + 486.80),
-             '850.40mil', '%.2fmil' % (height + 526.17))
-        line('889.77mil', '%.2fmil' % (height + 427.75),
-             '870.079mil', '%.2fmil' % (height + 486.80))
-        line('988.189mil', '%.2fmil' % (height + 506.49),
-             '889.77mil', '%.2fmil' % (height + 427.75))
-        line('50mil', '%.2fmil' % (height + 216.10),
-             '50mil', '%.2fmil' % (height + 246.10))
-        line('35.00mil', '%.2fmil' % (height + 231.10),
-             '65.00mil', '%.2fmil' % (height + 231.10))
-        line('988.189mil', '%.2fmil' % (height + 624.60),
-             '988.189mil', '%.2fmil' % (height + 506.49))
-        line('988.189mil', '%.2fmil' % (height + 624.60),
-             '968.50mil', '%.2fmil' % (height + 604.92))
-        arc('50mil', '%.2fmil' % (height + 231.10),
-            '125.00mil', '125.00mil', 35, 290)
-        arc('929.13mil', '%.2fmil' % (height + 624.60),
-            '59.06mil', '59.06mil', 90, 90)
+        pin(mil(50.), height + mil(231.10),
+            mil(147.80), mil(121.37), mil(151.74), mil(118.11), 0)
+        line(mil(299.21), height + mil(427.75),
+             mil(929.13), height + mil(683.66))
+        line(mil(653.54), height + mil(408.07),
+             mil(968.50), height + mil(604.92))
+        line(mil(653.54), height + mil(152.16),
+             mil(456.69), height + mil(152.16))
+        line(mil(653.54), height + mil(408.07),
+             mil(653.54), height + mil(152.16))
+        line(mil(220.47), height + mil(427.76),
+             mil(653.54), height + mil(408.07))
+        line(mil(870.079), height + mil(486.80),
+             mil(850.40), height + mil(526.17))
+        line(mil(889.77), height + mil(427.75),
+             mil(870.079), height + mil(486.80))
+        line(mil(988.189), height + mil(506.49),
+             mil(889.77), height + mil(427.75))
+        line(mil(50.), height + mil(216.10),
+             mil(50.), height + mil(246.10))
+        line(mil(35.), height + mil(231.10),
+             mil(65.), height + mil(231.10))
+        line(mil(988.189), height + mil(624.60),
+             mil(988.189), height + mil(506.49))
+        line(mil(988.189), height + mil(624.60),
+             mil(968.50), height + mil(604.92))
+        arc(mil(50.), height + mil(231.10),
+            mil(125.), mil(125.), 35, 290)
+        arc(mil(929.13), height + mil(624.60),
+            mil(59.06), mil(59.06), 90, 90)
 
         # top part
-        pin('50mil', '-231.10mil',
-            '147.80mil', '123.37mil', '151.74mil', '118.11mil', 0)
-        line('299.21mil', '-427.75mil', '929.13mil', '-683.66mil')
-        line('653.54mil', '-408.07mil', '968.50mil', '-604.92mil')
-        line('653.54mil', '-152.16mil', '456.69mil', '-152.16mil')
-        line('653.54mil', '-408.07mil', '653.54mil', '-152.16mil')
-        line('220.47mil', '-427.76mil', '653.54mil', '-408.07mil')
-        line('870.079mil', '-486.80mil', '850.40mil', '-526.17mil')
-        line('889.77mil', '-427.75mil', '870.079mil', '-486.80mil')
-        line('988.189mil', '-506.49mil', '889.77mil', '-427.75mil')
-        line('50mil', '-216.10mil', '50mil', '-246.10mil')
-        line('35.00mil', '-231.10mil', '65.00mil', '-231.10mil')
-        line('988.189mil', '-624.60mil', '988.189mil', '-506.49mil')
-        line('988.189mil', '-624.60mil', '968.50mil', '-604.92mil')
-        arc('50mil', '-231.10mil', '125.00mil', '125.00mil', 35, 290)
-        arc('929.13mil', '-624.60mil', '59.06mil', '59.06mil', 180, 90)
+        pin(mil(50.), mil(-231.10),
+            mil(147.80), mil(123.37), mil(151.74), mil(118.11), 0)
+        line(mil(299.21), mil(-427.75), mil(929.13), mil(-683.66))
+        line(mil(653.54), mil(-408.07), mil(968.50), mil(-604.92))
+        line(mil(653.54), mil(-152.16), mil(456.69), mil(-152.16))
+        line(mil(653.54), mil(-408.07), mil(653.54), mil(-152.16))
+        line(mil(220.47), mil(-427.76), mil(653.54), mil(-408.07))
+        line(mil(870.079), mil(-486.80), mil(850.40), mil(-526.17))
+        line(mil(889.77), mil(-427.75), mil(870.079), mil(-486.80))
+        line(mil(988.189), mil(-506.49), mil(889.77), mil(-427.75))
+        line(mil(50.), mil(-216.10), mil(50.), mil(-246.10))
+        line(mil(35.), mil(-231.10), mil(65.), mil(-231.10))
+        line(mil(988.189), mil(-624.60), mil(988.189), mil(-506.49))
+        line(mil(988.189), mil(-624.60), mil(968.50), mil(-604.92))
+        arc(mil(50.), mil(-231.10), mil(125.), mil(125.), 35, 290)
+        arc(mil(929.13), mil(-624.60), mil(59.06), mil(59.06), 180, 90)
 
         # box
-        line('-55.12mil', '%.2fmil' % (height + 428.15),
-             '259.84mil', '%.2fmil' % (height + 428.15))
-        line('-55.12mil', '-427.76mil', '-55.12mil',
-             '%.2fmil' % (height + 428.15))
-        line('456.69mil', '%.2fmil' % (height + 418.32),
-             '456.69mil', '-417.91mil')
-        line('220.47mil', '-427.76mil',
-             '-55.12mil', '-427.76mil')
+        line(mil(-55.12), height + mil(428.15),
+             mil(259.84), height + mil(428.15))
+        line(mil(-55.12), mil(-427.76), mil(-55.12), height + mil(428.15))
+        line(mil(456.69), height + mil(418.32), mil(456.69), mil(-417.91))
+        line(mil(220.47), mil(-427.76), mil(-55.12), mil(-427.76))
 
         # mark on the left
-        line('-75.00mil', '0mil', '-125.00mil', '-50.00mil')
-        line('-125.00mil', '50.00mil', '-75.00mil', '0mil')
+        line(mil(-75.), mil(0.), mil(-125.), mil(-50.))
+        line(mil(-125.), mil(50.), mil(-75.), mil(0.))
 
         # mark in the middle
-        line('50mil', '%.2fmil' % (height / 2 - 50),
-             '50mil', '%.2fmil' % (height / 2))
-        line('50mil', '%.2fmil' % (height / 2),
-             '100.00mil', '%.2fmil' % (height / 2))
-        line('50mil', '%.2fmil' % (height / 2 + 50),
-             '50mil', '%.2fmil' % (height / 2))
-        line('50mil', '%.2fmil' % (height / 2),
-             '0mil', '%.2fmil' % (height / 2))
+        line(mil(50.), height / 2 - mil(50.), mil(50.), height / 2)
+        line(mil(50.), height / 2, mil(100.), height / 2)
+        line(mil(50.), height / 2 + mil(50.), mil(50.), height / 2)
+        line(mil(50.), height / 2, mil(0.), height / 2)
     else:
         raise ValueError
 
     if style not in [STYLE_SOCKET, STYLE_PSL]:
-        line('%.2fmil' % x1, '%.2fmil' % y0, '%.2fmil' % x1, '%.2fmil' % y1)
-        line('%.2fmil' % x1, '%.2fmil' % y1, '%.2fmil' % x0, '%.2fmil' % y1)
-        line('%.2fmil' % x0, '%.2fmil' % y1, '%.2fmil' % x0, '%.2fmil' % y0)
+        line(x1, y0, x1, y1)
+        line(x1, y1, x0, y1)
+        line(x0, y1, x0, y0)
 
     end()
 
