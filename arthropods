@@ -427,7 +427,10 @@ def main():
     elif style == STYLE_BOXED:
         # box around pin 1
         line('%.2fmil' % x0, '%.2fmil' % y0, '%.2fmil' % x1, '%.2fmil' % y0)
-        line('-50mil', '50mil', '50mil', '50mil')
+        if shape == SHAPE_BA:
+            line('150mil', '50mil', '50mil', '50mil')
+        else:
+            line('-50mil', '50mil', '50mil', '50mil')
         line('50mil', '-50mil', '50mil', '50mil')
     elif style == STYLE_SOCKET:
         line('-30mil', '-50mil', '130mil', '-50mil')

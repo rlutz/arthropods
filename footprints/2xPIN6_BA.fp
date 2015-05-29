@@ -25,7 +25,7 @@ Element["" "2x6PIN_BA" "2x6PIN_BA" "2x6PIN_BA" 0.0000 0.0000 -50.00mil -120.00mi
 	Pad[-50.00mil 500.00mil 0.0000 500.00mil 1.4920mm 1.4000mm 1.6900mm "B6" "B6" "onsolder"]
 	Pad[100.00mil 500.00mil 150.00mil 500.00mil 1.4920mm 1.4000mm 1.6900mm "A6" "A6" "onsolder,edge2"]
 	ElementLine [-50.00mil -50.00mil 150.00mil -50.00mil 10.00mil]
-	ElementLine [-50.00mil 50.00mil 50.00mil 50.00mil 10.00mil]
+	ElementLine [150.00mil 50.00mil 50.00mil 50.00mil 10.00mil]
 	ElementLine [50.00mil -50.00mil 50.00mil 50.00mil 10.00mil]
 	ElementLine [150.00mil -50.00mil 150.00mil 550.00mil 10.00mil]
 	ElementLine [150.00mil 550.00mil -50.00mil 550.00mil 10.00mil]
