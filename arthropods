@@ -36,8 +36,9 @@ pad_mask = mm(1.69)
 
 pad_length = mil(50.)
 
-def format(length):
-    """Format a number of nanometers to a string in mm or mil."""
+# Formatting a number of nanometers to a string in mm or mil.
+
+def pcb_format(length):
     if not isinstance(length, int):
         raise ValueError
     if length == 0:
@@ -46,6 +47,22 @@ def format(length):
         return '%.2f%s' % (length / 25400., 'mil')
     else:
         return '%.4f%s' % (length / 1000000., 'mm')
+
+def user_format(length):
+    if not isinstance(length, int):
+        raise ValueError
+    if length == 0:
+        return '0'
+    if length % 127 == 0:
+        length, unit = '%.6f' % (length / 25400.), 'mil'
+    else:
+        length, unit = '%.6f' % (length / 1000000.), 'mm'
+    length = length.strip('0')
+    if length == '.':
+        length = '0'
+    else:
+        length = length.rstrip('.')
+    return length + unit
 
 # Output
 
@@ -65,7 +82,8 @@ def start(flags, desc, name, value, mark_x, mark_y,
         text_flags = ""
     print 'Element["%s" "%s" "%s" "%s" %s %s %s %s %s %s "%s"]' % (
         flags, desc, name, value,
-        format(mark_x), format(mark_y), format(text_x), format(text_y),
+        pcb_format(mark_x), pcb_format(mark_y),
+        pcb_format(text_x), pcb_format(text_y),
         text_dir, text_scale, text_flags)
     print '('
 
@@ -78,8 +96,9 @@ def pin(x, y, thickness, clearance, mask, drill,
     elif flags is None:
         flags = ""
     print "\tPin[%s %s %s %s %s %s \"%s\" \"%s\" \"%s\"]" % (
-        format(x), format(y),
-        format(thickness), format(clearance), format(mask), format(drill),
+        pcb_format(x), pcb_format(y),
+        pcb_format(thickness), pcb_format(clearance),
+        pcb_format(mask), pcb_format(drill),
         name, number, flags)
 
 def pad(x0, y0, x1, y1, thickness, clearance, mask,
@@ -91,18 +110,19 @@ def pad(x0, y0, x1, y1, thickness, clearance, mask,
     elif flags is None:
         flags = ""
     print "\tPad[%s %s %s %s %s %s %s \"%s\" \"%s\" \"%s\"]" % (
-        format(x0), format(y0), format(x1), format(y1),
-        format(thickness), format(clearance), format(mask),
+        pcb_format(x0), pcb_format(y0), pcb_format(x1), pcb_format(y1),
+        pcb_format(thickness), pcb_format(clearance), pcb_format(mask),
         name, number, flags)
 
 def line(x0, y0, x1, y1):
     print "\tElementLine [%s %s %s %s %s]" % (
-        format(x0), format(y0), format(x1), format(y1), format(line_thickness))
+        pcb_format(x0), pcb_format(y0), pcb_format(x1), pcb_format(y1),
+        pcb_format(line_thickness))
 
 def arc(x, y, xradius, yradius, start_angle, delta_angle):
     print "\tElementArc [%s %s %s %s %d %d %s]" % (
-        format(x), format(y), format(xradius), format(yradius),
-        start_angle, delta_angle, format(line_thickness))
+        pcb_format(x), pcb_format(y), pcb_format(xradius), pcb_format(yradius),
+        start_angle, delta_angle, pcb_format(line_thickness))
 
 def end():
     print
@@ -221,7 +241,7 @@ def main():
 "                        distance between the rows\n"
 "      -p, --pad-length=LENGTH\t\t[default: %s]\n"
 "                        length of the solder pads\n"
-                % (format(row_distance), format(pad_length)))
+                % (user_format(row_distance), user_format(pad_length)))
             sys.stdout.write("\n")
             sys.stdout.write(
 "      --line-thickness=Xmm|Xmil\t[default: %s]\n"
@@ -232,11 +252,11 @@ def main():
 "      --pad-thickness=Xmm|Xmil\t[default: %s]\n"
 "      --pad-clearance=Xmm|Xmil\t[default: %s]\n"
 "      --pad-mask=Xmm|Xmil\t[default: %s]\n"
-                % (format(line_thickness),
-                   format(pin_thickness), format(pin_clearance),
-                     format(pin_mask), format(pin_drill),
-                   format(pad_thickness), format(pad_clearance),
-                     format(pad_mask)))
+                % (user_format(line_thickness),
+                   user_format(pin_thickness), user_format(pin_clearance),
+                     user_format(pin_mask), user_format(pin_drill),
+                   user_format(pad_thickness), user_format(pad_clearance),
+                     user_format(pad_mask)))
             sys.stdout.write("\n")
             sys.stdout.write(
 "      --help            give this help\n"
