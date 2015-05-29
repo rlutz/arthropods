@@ -18,10 +18,44 @@
 
 import getopt, sys
 
-# Lengths are internally represented as an integer of nanometers.
+ZERO, MM, MIL = xrange(3)
+class Nanometers:
+    """Represents a length as an integer of nanometers and a preferred unit."""
+    def __init__(self, v, unit):
+        if not isinstance(v, int) or unit not in [ZERO, MM, MIL]:
+            raise ValueError
+        self.v = v
+        self.unit = unit
+    def __cmp__(self, other):
+        if not isinstance(other, Nanometers):
+            return NotImplemented
+        return cmp(self.v, other.v)
+    def __add__(self, other):
+        if not isinstance(other, Nanometers):
+            return NotImplemented
+        return Nanometers(
+            self.v + other.v,
+            ZERO if self.unit == ZERO and other.unit == ZERO else
+            MIL if self.unit != MM and other.unit != MM else MM)
+    def __sub__(self, other):
+        if not isinstance(other, Nanometers):
+            return NotImplemented
+        return Nanometers(
+            self.v - other.v,
+            ZERO if self.unit == ZERO and other.unit == ZERO else
+            MIL if self.unit != MM and other.unit != MM else MM)
+    def __mul__(self, other):
+        return Nanometers(self.v * other, self.unit)
+    def __div__(self, other):
+        return Nanometers(self.v / other, self.unit)
+    __rmul__ = __mul__
+    __rdiv__ = __div__
+    def __neg__(self):
+        return Nanometers(-self.v, self.unit)
 
-def mm(x): return int(x * 1000000)
-def mil(x): return int(x * 25400)
+def mm(v): return Nanometers(int(v * 1000000), MM)
+def mil(v): return Nanometers(int(v * 25400), MIL)
+zero = Nanometers(0, ZERO)
 
 line_thickness = mil(10.)
 
@@ -39,24 +73,24 @@ pad_length = mil(50.)
 # Formatting a number of nanometers to a string in mm or mil.
 
 def pcb_format(length):
-    if not isinstance(length, int):
+    if not isinstance(length, Nanometers):
         raise ValueError
-    if length == 0:
+    if length.v == 0:
         return '0.0000'
-    if length % 127 == 0:
-        return '%.2f%s' % (length / 25400., 'mil')
+    if length.unit == MIL:
+        return '%.2f%s' % (length.v / 25400., 'mil')
     else:
-        return '%.4f%s' % (length / 1000000., 'mm')
+        return '%.4f%s' % (length.v / 1000000., 'mm')
 
 def user_format(length):
-    if not isinstance(length, int):
+    if not isinstance(length, Nanometers):
         raise ValueError
-    if length == 0:
+    if length.v == 0:
         return '0'
-    if length % 127 == 0:
-        length, unit = '%.6f' % (length / 25400.), 'mil'
+    if length.unit == MIL:
+        length, unit = '%.6f' % (length.v / 25400.), 'mil'
     else:
-        length, unit = '%.6f' % (length / 1000000.), 'mm'
+        length, unit = '%.6f' % (length.v / 1000000.), 'mm'
     length = length.strip('0')
     if length == '.':
         length = '0'
@@ -300,7 +334,7 @@ def main():
 
     if shape == SHAPE_STRAIGHT:
         rows = 1
-        row_distance = 0
+        row_distance = zero
     else:
         rows = 2
 
@@ -341,7 +375,7 @@ def main():
             invalid_arguments(
                 "This style does not work with a custom row distance")
 
-    start(None, name, name, name, 0, 0,
+    start(None, name, name, name, zero, zero,
           text_x, text_y, text_dir, text_scale, None)
 
     for i in xrange(0, eff_pin_count):
@@ -367,26 +401,26 @@ def main():
             i0, i1 = 'B%d' % (i + 1), 'A%d' % (i + 1)
 
         if shape == SHAPE_STRAIGHT:
-            pin(0, y, pin_thickness, pin_clearance, pin_mask, pin_drill,
+            pin(zero, y, pin_thickness, pin_clearance, pin_mask, pin_drill,
                 i + 1, flags = maybe_square)
             pad(-pad_length / 2, y, pad_length / 2, y,
                 pad_thickness, pad_clearance, pad_mask,
                 i + 1, flags = ['onsolder'] + maybe_square)
         elif row_distance < mil(100.) + pad_length:
-            pin(0, y,
+            pin(zero, y,
                 pin_thickness, pin_clearance, pin_mask, pin_drill,
                 i0, flags = maybe_square)
             pin(width, y,
                 pin_thickness, pin_clearance, pin_mask, pin_drill,
                 i1, flags = other_maybe_square)
-            pad(-pad_length, y, 0, y,
+            pad(-pad_length, y, zero, y,
                 pad_thickness, pad_clearance, pad_mask,
                 i0, flags = ['onsolder'] + maybe_square)
             pad(width, y, width + pad_length, y,
                 pad_thickness, pad_clearance, pad_mask,
                 i1, flags = ['onsolder', 'edge2'] + other_maybe_square)
         else:
-            pin(0, y,
+            pin(zero, y,
                 pin_thickness, pin_clearance, pin_mask, pin_drill,
                 i0, flags = maybe_square)
             pad(-pad_length / 2, y, pad_length / 2, y,
