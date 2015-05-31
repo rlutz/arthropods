@@ -61,7 +61,7 @@ STYLE_THICKENED, STYLE_DENT, STYLE_BOXED, STYLE_SOCKET, \
     STYLE_WSL_ARROW, STYLE_WSL_DENT, STYLE_PSL = xrange(7)
 SHAPE_STRAIGHT, SHAPE_ZIGZAG, SHAPE_USHAPED, SHAPE_AB, SHAPE_BA = xrange(5)
 
-opt = {
+opt_defaults = {
     'name': None,
     'pins-per-row': None,
     'total-pin-count': None,
@@ -84,6 +84,7 @@ opt = {
     'pad-clearance': mm(1.4),
     'pad-mask': mm(1.69)
 }
+opt = opt_defaults.copy()
 
 # Formatting a number of nanometers to a string in mm or mil.
 
@@ -319,16 +320,16 @@ Generate footprints for arthropodic components
       --help            give this help
       --version         display version number
 """ % (sys.argv[0],
-       user_format(opt['row-distance']),
-       user_format(opt['pad-length']),
-       user_format(opt['line-thickness']),
-       user_format(opt['pin-thickness']),
-       user_format(opt['pin-clearance']),
-       user_format(opt['pin-mask']),
-       user_format(opt['pin-drill']),
-       user_format(opt['pad-thickness']),
-       user_format(opt['pad-clearance']),
-       user_format(opt['pad-mask'])))
+       user_format(opt_defaults['row-distance']),
+       user_format(opt_defaults['pad-length']),
+       user_format(opt_defaults['line-thickness']),
+       user_format(opt_defaults['pin-thickness']),
+       user_format(opt_defaults['pin-clearance']),
+       user_format(opt_defaults['pin-mask']),
+       user_format(opt_defaults['pin-drill']),
+       user_format(opt_defaults['pad-thickness']),
+       user_format(opt_defaults['pad-clearance']),
+       user_format(opt_defaults['pad-mask'])))
             sys.exit(0)
         elif option == '--version':
             sys.stdout.write("""\
