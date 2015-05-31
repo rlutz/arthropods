@@ -192,6 +192,7 @@ def main():
     try:
         options, args = getopt.getopt(
             sys.argv[1:], 'r:n:s:d:p:', [
+                'name=',
                 'row-count=', 'numbering-scheme=', 'style=',
                 'row-distance=', 'pad-length=',
                 'line-thickness=',
@@ -207,13 +208,16 @@ def main():
     except getopt.GetoptError as e:
         invalid_arguments(e.msg)
 
+    name = None
     style = STYLE_THICKENED
     rows = 1
     shape = SHAPE_STRAIGHT
     row_distance = mil(100.)
 
     for option, value in options:
-        if option in ['-r', '--row-count']:
+        if option == '--name':
+            name = value
+        elif option in ['-r', '--row-count']:
             try:
                 rows = int(value)
             except KeyError:
@@ -262,9 +266,10 @@ def main():
             pad_mask = parse(value)
         elif option == '--help':
             sys.stdout.write("""\
-Usage: %s NAME PIN_COUNT
+Usage: %s PIN_COUNT
 Generate footprints for arthropodic components
 
+      --name=NAME       component name (only used for the "Element[...]" line)
       -r, --row-count=1|2
                         number of rows of pins
       -n, --numbering-scheme=zigzag|u-shaped|ab|ba
@@ -320,10 +325,13 @@ GNU General Public License for more details.
         else:
             raise AssertionError
 
+    if name is None:
+        invalid_arguments("Missing --name= option")
+
     try:
-        name, pin_count_str = args
+        pin_count_str, = args
     except ValueError:
-        sys.stdout.write("Usage: %s NAME PIN_COUNT\n" % sys.argv[0])
+        sys.stdout.write("Usage: %s PIN_COUNT\n" % sys.argv[0])
         sys.stderr.write("Try `%s --help' for more information.\n"
                          % sys.argv[0])
         sys.exit(1)
