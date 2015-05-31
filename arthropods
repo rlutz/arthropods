@@ -247,6 +247,57 @@ def set_option(opt, name, value):
     if name == 'total-pin-count':
         opt['pins-per-row'] = None
 
+def syntax_error(path, lineno, message):
+    sys.stderr.write("%s: syntax error in `%s', line %d: %s\n"
+                     % (sys.argv[0], path, lineno, message))
+    sys.exit(1)
+
+def read_config(f, path):
+    variety = {}
+    config = { None: variety }
+
+    for i, line in enumerate(f):
+        if line.endswith('\n'):
+            line = line[:-1]
+        stripped = line[:-1].lstrip()
+        if not stripped or stripped.startswith(';'):
+            continue
+
+        if line.startswith('['):
+            if not line.startswith('[variety "') or not line.endswith('"]'):
+                syntax_error(path, i, "malformed variety section header")
+            line = line[10:-2]
+            if not line:
+                syntax_error(path, i, "empty variety name")
+            if line in config:
+                syntax_error(path, i, "duplicate variety name `%s'" % line)
+            variety = {}
+            config[line] = variety
+            continue
+
+        if variety is config[None]:
+            if line.startswith('\t'):
+                syntax_error(path, i, "unexpected indented line")
+        else:
+            if not line.startswith('\t'):
+                syntax_error(path, i, "unexpected unindented line")
+            line = line[1:]
+
+        try:
+            pos = line.index(' = ')
+        except ValueError:
+            syntax_error(path, i, "malformed line")
+
+        name = line[:pos]
+        value = line[pos + 3:]
+
+        try:
+            set_option(variety, name, value)
+        except OptionError as e:
+            syntax_error(path, i, e.message)
+
+    return config
+
 def invalid_arguments(message):
     sys.stderr.write("%s: %s\n" % (sys.argv[0], message))
     sys.stderr.write("Try `%s --help' for more information.\n" % sys.argv[0])
@@ -255,7 +306,8 @@ def invalid_arguments(message):
 def main():
     try:
         options, args = getopt.getopt(
-            sys.argv[1:], 'p:P:', [
+            sys.argv[1:], 'v:p:P:', [
+                'variety=',
                 'name=', 'pins-per-row=', 'total-pin-count=',
                 'row-count=', 'numbering-scheme=', 'style=',
                 'row-distance=', 'pad-length=',
@@ -272,12 +324,19 @@ def main():
     except getopt.GetoptError as e:
         invalid_arguments(e.msg)
 
+    variety = None
+
     for option, value in options:
-        if option == '--help':
+        if option in ['-v', '--variety']:
+            if variety is not None:
+                invalid_arguments("duplicate variety option")
+            variety = value
+        elif option == '--help':
             sys.stdout.write("""\
-Usage: %s OPTION...
+Usage: %s OPTION... [CONFIGURATION-FILE]
 Generate footprints for arthropodic components
 
+      -v, --variety=... select variety from configuration file
       --name=NAME       component name (only used for the "Element[...]" line)
       -p, --pins-per-row=N
                         number of pins per row
@@ -349,15 +408,31 @@ GNU General Public License for more details.
             except OptionError as e:
                 invalid_arguments(e.message)
 
-    if args:
+    if not args:
+        config = { None: {} }
+    elif len(args) == 1:
+        try:
+            config_file = open(args[0])
+        except IOError as e:
+            sys.stderr.write("%s: can't open configuration file `%s': %s"
+                             % (sys.argv[0], e.filename, e.strerror))
+        try:
+            config = read_config(config_file, args[0])
+        finally:
+            config_file.close()
+    else:
         sys.stdout.write("Usage: %s OPTION...\n" % sys.argv[0])
         sys.stderr.write("Try `%s --help' for more information.\n"
                          % sys.argv[0])
         sys.exit(1)
 
-    for name in opt_defaults:
-        if name not in opt:
-            opt[name] = opt_defaults[name]
+    if variety not in config:
+        invalid_arguments("variety `%s' not found in configuration" % variety)
+
+    for merge_opts in (config[variety], config[None], opt_defaults):
+        for name in merge_opts:
+            if name not in opt:
+                opt[name] = merge_opts[name]
 
     for name in ['name', 'row-count', 'style', 'pad-length', 'line-thickness',
                  'pin-thickness', 'pin-clearance', 'pin-mask', 'pin-drill',

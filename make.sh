@@ -1,37 +1,48 @@
 #!/bin/bash
 
 for pin_count in 6 16
-do	./arthropods --style=thickened \
+do	./arthropods \
 	    --name=SIP${pin_count} -P ${pin_count} \
+	    -v SIP config \
 	  > footprints/SIP${pin_count}.fp
-	./arthropods --row-count=2 --numbering-scheme=u-shaped --row-distance=300mil --style=dent \
+	./arthropods \
 	    --name=DIP${pin_count} -P ${pin_count} \
+	    -v DIP config \
 	  > footprints/DIP${pin_count}.fp
-	./arthropods --row-count=2 --numbering-scheme=u-shaped --row-distance=600mil --style=dent \
+	./arthropods \
 	    --name=DIP${pin_count}_wide -P ${pin_count} \
+	    -v DIPwide config \
 	  > footprints/DIPwide${pin_count}.fp
-	./arthropods --style=thickened \
+	./arthropods \
 	    --name=1x${pin_count}PIN -p ${pin_count} \
+	    -v 1xXPIN config \
 	  > footprints/1xPIN${pin_count}.fp
-	./arthropods --row-count=2 --numbering-scheme=zigzag --style=boxed \
+	./arthropods \
 	    --name=2x${pin_count}PIN -p ${pin_count} \
+	    -v 2xXPIN config \
 	  > footprints/2xPIN${pin_count}.fp
-	./arthropods --row-count=2 --numbering-scheme=ab --style=boxed \
+	./arthropods \
 	    --name=2x${pin_count}PIN_AB -p ${pin_count} \
+	    -v 2xXPIN_AB config \
 	  > footprints/2xPIN${pin_count}_AB.fp
-	./arthropods --row-count=2 --numbering-scheme=ba --style=boxed \
+	./arthropods \
 	    --name=2x${pin_count}PIN_BA -p ${pin_count} \
+	    -v 2xXPIN_BA config \
 	  > footprints/2xPIN${pin_count}_BA.fp
-	./arthropods --row-count=2 --numbering-scheme=ba --style=socket \
+	./arthropods \
 	    --name=2x${pin_count}PINsocket_BA -p ${pin_count} \
+	    -v 2xXPINsocket_BA config \
 	  > footprints/2xPIN${pin_count}socket_BA.fp
-	./arthropods --row-count=2 --numbering-scheme=zigzag --style=wsl-arrow \
+	./arthropods \
 	    --name=2x${pin_count}PIN_WSL -p ${pin_count} \
+	    -v 2xXPIN_WSL config \
 	  > footprints/WSL${pin_count}.fp
-	./arthropods --row-count=2 --numbering-scheme=zigzag --style=wsl-dent \
+	./arthropods \
 	    --name=2x${pin_count}PIN_WSL -p ${pin_count} \
+	    -v 2xXPIN_WSLalt config \
 	  > footprints/WSLalt${pin_count}.fp
-	./arthropods --row-count=2 --numbering-scheme=zigzag --style=psl \
+	./arthropods \
 	    --name=2x${pin_count}PIN_PSL -p ${pin_count} \
+	    -v 2xXPIN_PSL config \
 	  > footprints/PSL${pin_count}.fp
 done

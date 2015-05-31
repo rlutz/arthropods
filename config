@@ -1,0 +1,52 @@
+[variety "SIP"]
+	style = thickened
+
+[variety "DIP"]
+	row-count = 2
+	row-distance = 300mil
+	numbering-scheme = u-shaped
+	style = dent
+
+[variety "DIPwide"]
+	row-count = 2
+	row-distance = 600mil
+	numbering-scheme = u-shaped
+	style = dent
+
+[variety "1xXPIN"]
+	style = thickened
+
+[variety "2xXPIN"]
+	row-count = 2
+	numbering-scheme = zigzag
+	style = boxed
+
+[variety "2xXPIN_AB"]
+	row-count = 2
+	numbering-scheme = ab
+	style = boxed
+
+[variety "2xXPIN_BA"]
+	row-count = 2
+	numbering-scheme = ba
+	style = boxed
+
+[variety "2xXPINsocket_BA"]
+	row-count = 2
+	numbering-scheme = ba
+	style = socket
+
+[variety "2xXPIN_WSL"]
+	row-count = 2
+	numbering-scheme = zigzag
+	style = wsl-arrow
+
+[variety "2xXPIN_WSLalt"]
+	row-count = 2
+	numbering-scheme = zigzag
+	style = wsl-dent
+
+[variety "2xXPIN_PSL"]
+	row-count = 2
+	numbering-scheme = zigzag
+	style = psl
