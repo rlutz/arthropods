@@ -62,6 +62,7 @@ STYLE_THICKENED, STYLE_DENT, STYLE_BOXED, STYLE_SOCKET, \
 SHAPE_STRAIGHT, SHAPE_ZIGZAG, SHAPE_USHAPED, SHAPE_AB, SHAPE_BA = xrange(5)
 
 opt_defaults = {
+    'output-file': '-',
     'row-count': 1,
     'row-distance': mil(100.),
     'pad-length': mil(50.),
@@ -123,12 +124,12 @@ def start(flags, desc, name, value, mark_x, mark_y,
         text_flags = ','.join(text_flags)
     elif text_flags is None:
         text_flags = ""
-    print 'Element["%s" "%s" "%s" "%s" %s %s %s %s %s %s "%s"]' % (
+    f.write('Element["%s" "%s" "%s" "%s" %s %s %s %s %s %s "%s"]\n' % (
         flags, desc, name, value,
         pcb_format(mark_x), pcb_format(mark_y),
         pcb_format(text_x), pcb_format(text_y),
-        text_dir, text_scale, text_flags)
-    print '('
+        text_dir, text_scale, text_flags))
+    f.write('(\n')
 
 def pin(x, y, name, number = None, flags = None):
     custom_pin(x, y, opt['pin-thickness'], opt['pin-clearance'],
@@ -143,11 +144,11 @@ def custom_pin(x, y, thickness, clearance, mask, drill,
         flags = ','.join(flags)
     elif flags is None:
         flags = ""
-    print "\tPin[%s %s %s %s %s %s \"%s\" \"%s\" \"%s\"]" % (
+    f.write('\tPin[%s %s %s %s %s %s "%s" "%s" "%s"]\n' % (
         pcb_format(x), pcb_format(y),
         pcb_format(thickness), pcb_format(clearance),
         pcb_format(mask), pcb_format(drill),
-        name, number, flags)
+        name, number, flags))
 
 def pad(x0, y0, x1, y1, name, number = None, flags = None):
     if number is None:
@@ -156,24 +157,24 @@ def pad(x0, y0, x1, y1, name, number = None, flags = None):
         flags = ','.join(flags)
     elif flags is None:
         flags = ""
-    print "\tPad[%s %s %s %s %s %s %s \"%s\" \"%s\" \"%s\"]" % (
+    f.write('\tPad[%s %s %s %s %s %s %s "%s" "%s" "%s"]\n' % (
         pcb_format(x0), pcb_format(y0), pcb_format(x1), pcb_format(y1),
         pcb_format(opt['pad-thickness']), pcb_format(opt['pad-clearance']),
-        pcb_format(opt['pad-mask']), name, number, flags)
+        pcb_format(opt['pad-mask']), name, number, flags))
 
 def line(x0, y0, x1, y1):
-    print "\tElementLine [%s %s %s %s %s]" % (
+    f.write('\tElementLine [%s %s %s %s %s]\n' % (
         pcb_format(x0), pcb_format(y0), pcb_format(x1), pcb_format(y1),
-        pcb_format(opt['line-thickness']))
+        pcb_format(opt['line-thickness'])))
 
 def arc(x, y, xradius, yradius, start_angle, delta_angle):
-    print "\tElementArc [%s %s %s %s %d %d %s]" % (
+    f.write('\tElementArc [%s %s %s %s %d %d %s]\n' % (
         pcb_format(x), pcb_format(y), pcb_format(xradius), pcb_format(yradius),
-        start_angle, delta_angle, pcb_format(opt['line-thickness']))
+        start_angle, delta_angle, pcb_format(opt['line-thickness'])))
 
 def end():
-    print
-    print "\t)"
+    f.write('\n')
+    f.write('\t)\n')
 
 # Parameter handling
 
@@ -192,7 +193,7 @@ def parse(length):
     return { 'mm': mm, 'mil': mil }[unit](length)
 
 def set_option(opt, name, value):
-    if name == 'name':
+    if name in ['name', 'output-file']:
         pass
     elif name in ['pins-per-row', 'total-pin-count', 'row-count']:
         try:
@@ -304,11 +305,13 @@ def invalid_arguments(message):
     sys.exit(1)
 
 def main():
+    global f
+
     try:
         options, args = getopt.getopt(
             sys.argv[1:], 'v:p:P:', [
                 'variety=',
-                'name=', 'pins-per-row=', 'total-pin-count=',
+                'name=', 'output-file=', 'pins-per-row=', 'total-pin-count=',
                 'row-count=', 'numbering-scheme=', 'style=',
                 'row-distance=', 'pad-length=',
                 'line-thickness=',
@@ -338,6 +341,7 @@ Generate footprints for arthropodic components
 
       -v, --variety=... select variety from configuration file
       --name=NAME       component name (only used for the "Element[...]" line)
+      --output-file     place the output into a file (or "-" for stdout)
       -p, --pins-per-row=N
                         number of pins per row
       -P, --total-pin-count=N
@@ -434,7 +438,8 @@ GNU General Public License for more details.
             if name not in opt:
                 opt[name] = merge_opts[name]
 
-    for name in ['name', 'row-count', 'style', 'pad-length', 'line-thickness',
+    for name in ['name', 'output-file',
+                 'row-count', 'style', 'pad-length', 'line-thickness',
                  'pin-thickness', 'pin-clearance', 'pin-mask', 'pin-drill',
                  'pad-thickness', 'pad-clearance', 'pad-mask']:
         if name not in opt:
@@ -479,6 +484,15 @@ GNU General Public License for more details.
             value = value[:start_] + subst + value[stop_ + 1:]
             pos = start_ + len(subst)
         opt[name] = value
+
+    if opt['output-file'] == '-':
+        f = sys.stdout
+    else:
+        try:
+            f = open(opt['output-file'], 'w')
+        except IOError as e:
+            sys.stderr.write("%s: can't open output file `%s': %s"
+                             % (sys.argv[0], e.filename, e.strerror))
 
     pin_count = opt['total-pin-count']
     eff_pin_count = opt['pins-per-row']
@@ -700,6 +714,13 @@ GNU General Public License for more details.
         line(x0, y1, x0, y0)
 
     end()
+
+    if opt['output-file'] != '-':
+        try:
+            f.close()
+        except IOError as e:
+            sys.stderr.write("%s: can't close output file: %s"
+                             % (sys.argv[0], e.strerror))
 
 if __name__ == '__main__':
     main()
