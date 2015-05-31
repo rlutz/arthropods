@@ -192,7 +192,7 @@ def main():
     try:
         options, args = getopt.getopt(
             sys.argv[1:], '', [
-                'name=',
+                'name=', 'pin-count=',
                 'row-count=', 'numbering-scheme=', 'style=',
                 'row-distance=', 'pad-length=',
                 'line-thickness=',
@@ -209,6 +209,7 @@ def main():
         invalid_arguments(e.msg)
 
     name = None
+    pin_count = None
     style = STYLE_THICKENED
     rows = 1
     shape = SHAPE_STRAIGHT
@@ -217,6 +218,11 @@ def main():
     for option, value in options:
         if option == '--name':
             name = value
+        elif option == '--pin-count':
+            try:
+                pin_count = int(value)
+            except ValueError:
+                invalid_arguments("`%s' is not an integer" % value)
         elif option == '--row-count':
             try:
                 rows = int(value)
@@ -266,10 +272,11 @@ def main():
             pad_mask = parse(value)
         elif option == '--help':
             sys.stdout.write("""\
-Usage: %s PIN_COUNT
+Usage: %s OPTION...
 Generate footprints for arthropodic components
 
       --name=NAME       component name (only used for the "Element[...]" line)
+      --pin-count=N     number of pins
       --row-count=1|2   number of rows of pins
       --numbering-scheme=zigzag|u-shaped|ab|ba
                         pin numbering scheme (only relevant for >1 rows)
@@ -326,19 +333,14 @@ GNU General Public License for more details.
 
     if name is None:
         invalid_arguments("Missing --name= option")
+    if pin_count is None:
+        invalid_arguments("Missing --pin-count= option")
 
-    try:
-        pin_count_str, = args
-    except ValueError:
-        sys.stdout.write("Usage: %s PIN_COUNT\n" % sys.argv[0])
+    if args:
+        sys.stdout.write("Usage: %s OPTION...\n" % sys.argv[0])
         sys.stderr.write("Try `%s --help' for more information.\n"
                          % sys.argv[0])
         sys.exit(1)
-
-    try:
-        pin_count = int(pin_count_str)
-    except ValueError:
-        invalid_arguments("`%s' is not an integer" % pin_count_str)
 
     if rows == 1:
         shape = SHAPE_STRAIGHT
