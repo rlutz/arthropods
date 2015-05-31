@@ -11,64 +11,56 @@ output-file = footprints/$(name).fp
 	style = dent
 	name = DIP$(total-pin-count)
 
-[variety "DIPwide"]
+[variety "DIP_wide"]
 	row-count = 2
 	row-distance = 600mil
 	numbering-scheme = u-shaped
 	style = dent
 	name = DIP$(total-pin-count)_wide
-	output-file = footprints/DIPwide$(total-pin-count).fp
 
 [variety "1xXPIN"]
 	style = thickened
 	name = 1x$(pins-per-row)PIN
-	output-file = footprints/1xPIN$(pins-per-row).fp
 
 [variety "2xXPIN"]
 	row-count = 2
 	numbering-scheme = zigzag
 	style = boxed
 	name = 2x$(pins-per-row)PIN
-	output-file = footprints/2xPIN$(pins-per-row).fp
 
 [variety "2xXPIN_AB"]
 	row-count = 2
 	numbering-scheme = ab
 	style = boxed
 	name = 2x$(pins-per-row)PIN_AB
-	output-file = footprints/2xPIN$(pins-per-row)_AB.fp
 
 [variety "2xXPIN_BA"]
 	row-count = 2
 	numbering-scheme = ba
 	style = boxed
 	name = 2x$(pins-per-row)PIN_BA
-	output-file = footprints/2xPIN$(pins-per-row)_BA.fp
 
 [variety "2xXPINsocket_BA"]
 	row-count = 2
 	numbering-scheme = ba
 	style = socket
 	name = 2x$(pins-per-row)PINsocket_BA
-	output-file = footprints/2xPIN$(pins-per-row)socket_BA.fp
 
 [variety "2xXPIN_WSL"]
 	row-count = 2
 	numbering-scheme = zigzag
 	style = wsl-arrow
 	name = 2x$(pins-per-row)PIN_WSL
-	output-file = footprints/WSL$(pins-per-row).fp
 
 [variety "2xXPIN_WSLalt"]
 	row-count = 2
 	numbering-scheme = zigzag
 	style = wsl-dent
 	name = 2x$(pins-per-row)PIN_WSL
-	output-file = footprints/WSLalt$(pins-per-row).fp
+	output-file = footprints/2x$(pins-per-row)PIN_WSLalt.fp
 
 [variety "2xXPIN_PSL"]
 	row-count = 2
 	numbering-scheme = zigzag
 	style = psl
 	name = 2x$(pins-per-row)PIN_PSL
-	output-file = footprints/PSL$(pins-per-row).fp

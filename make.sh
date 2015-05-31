@@ -3,7 +3,7 @@
 for pin_count in 6 16
 do	./arthropods -v SIP -P ${pin_count} config
 	./arthropods -v DIP -P ${pin_count} config
-	./arthropods -v DIPwide -P ${pin_count} config
+	./arthropods -v DIP_wide -P ${pin_count} config
 	./arthropods -v 1xXPIN -p ${pin_count} config
 	./arthropods -v 2xXPIN -p ${pin_count} config
 	./arthropods -v 2xXPIN_AB -p ${pin_count} config
