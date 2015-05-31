@@ -63,20 +63,6 @@ SHAPE_STRAIGHT, SHAPE_ZIGZAG, SHAPE_USHAPED, SHAPE_AB, SHAPE_BA = xrange(5)
 
 opt_defaults = {
     'output-file': '-',
-    'row-count': 1,
-    'row-distance': mil(100.),
-    'pad-length': mil(50.),
-
-    'line-thickness': mil(10.),
-
-    'pin-thickness': mm(1.5),
-    'pin-clearance': mm(1.4),
-    'pin-mask': mm(1.7),
-    'pin-drill': mm(1.),
-
-    'pad-thickness': mm(1.492),
-    'pad-clearance': mm(1.4),
-    'pad-mask': mm(1.69)
 }
 opt = {}
 
@@ -357,33 +343,23 @@ Generate footprints for arthropodic components
       --style=thickened|dent|boxed|socket|wsl-arrow|wsl-dent|psl
                         use this style to indicate pin 1 on the silk layer
 
-      --row-distance=DISTANCE	[default: %s]
+      --row-distance=DISTANCE
                         distance between the rows
-      --pad-length=LENGTH	[default: %s]
+      --pad-length=LENGTH
                         length of the solder pads
 
-      --line-thickness=Xmm|Xmil	[default: %s]
-      --pin-thickness=Xmm|Xmil	[default: %s]
-      --pin-clearance=Xmm|Xmil	[default: %s]
-      --pin-mask=Xmm|Xmil	[default: %s]
-      --pin-drill=Xmm|Xmil	[default: %s]
-      --pad-thickness=Xmm|Xmil	[default: %s]
-      --pad-clearance=Xmm|Xmil	[default: %s]
-      --pad-mask=Xmm|Xmil	[default: %s]
+      --line-thickness=Xmm|Xmil
+      --pin-thickness=Xmm|Xmil
+      --pin-clearance=Xmm|Xmil
+      --pin-mask=Xmm|Xmil
+      --pin-drill=Xmm|Xmil
+      --pad-thickness=Xmm|Xmil
+      --pad-clearance=Xmm|Xmil
+      --pad-mask=Xmm|Xmil
 
       --help            give this help
       --version         display version number
-""" % (sys.argv[0],
-       user_format(opt_defaults['row-distance']),
-       user_format(opt_defaults['pad-length']),
-       user_format(opt_defaults['line-thickness']),
-       user_format(opt_defaults['pin-thickness']),
-       user_format(opt_defaults['pin-clearance']),
-       user_format(opt_defaults['pin-mask']),
-       user_format(opt_defaults['pin-drill']),
-       user_format(opt_defaults['pad-thickness']),
-       user_format(opt_defaults['pad-clearance']),
-       user_format(opt_defaults['pad-mask'])))
+""" % sys.argv[0])
             sys.exit(0)
         elif option == '--version':
             sys.stdout.write("""\
