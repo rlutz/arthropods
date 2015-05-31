@@ -191,8 +191,8 @@ def main():
 
     try:
         options, args = getopt.getopt(
-            sys.argv[1:], 's:ZUABd:p:', [
-                'style=',
+            sys.argv[1:], 'r:s:ZUABd:p:', [
+                'row-count=', 'style=',
                 'straight', 'zigzag', 'u-shaped', 'ab', 'ba',
                 'row-distance=', 'pad-length=',
                 'line-thickness=',
@@ -209,11 +209,17 @@ def main():
         invalid_arguments(e.msg)
 
     style = STYLE_THICKENED
+    rows = 1
     shape = SHAPE_STRAIGHT
     row_distance = mil(100.)
 
     for option, value in options:
-        if option in ['-s', '--style']:
+        if option in ['-r', '--row-count']:
+            try:
+                rows = int(value)
+            except KeyError:
+                invalid_arguments("`%s' is not an integer" % value)
+        elif option in ['-s', '--style']:
             try:
                 style = { 'thickened': STYLE_THICKENED,
                           'dent': STYLE_DENT,
@@ -260,6 +266,8 @@ def main():
 Usage: %s NAME PIN_COUNT
 Generate footprints for arthropodic components
 
+      -r, --row-count=1|2
+                        number of rows of pins
       -s, --style=thickened|dent|boxed|socket|wsl-arrow|wsl-dent|psl
                         use this style to indicate pin 1 on the silk layer
 
@@ -325,14 +333,18 @@ GNU General Public License for more details.
     except ValueError:
         invalid_arguments("`%s' is not an integer" % pin_count_str)
 
+    if rows == 1:
+        shape = SHAPE_STRAIGHT
+        row_distance = zero
+    elif rows == 2:
+        if shape == SHAPE_STRAIGHT:
+            invalid_arguments("Can't use straight numbering "
+                              "for 2-row footprint")
+    else:
+        invalid_arguments("Row count must be 1 or 2")
+
     if shape != SHAPE_STRAIGHT and pin_count % 2 != 0:
         invalid_arguments("Pin count for zigzag/u-shaped/AB/BA must be even")
-
-    if shape == SHAPE_STRAIGHT:
-        rows = 1
-        row_distance = zero
-    else:
-        rows = 2
 
     eff_pin_count = pin_count // rows
 
