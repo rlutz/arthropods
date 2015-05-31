@@ -459,6 +459,27 @@ GNU General Public License for more details.
     else:
         opt['total-pin-count'] = opt['pins-per-row'] * opt['row-count']
 
+    for name in opt:
+        value = opt[name]
+        if not isinstance(value, basestring):
+            continue
+        pos = 0
+        while True:
+            try:
+                start_ = value.index('$(', pos)
+            except ValueError:
+                break
+            try:
+                stop_ = value.index(')', start_)
+            except ValueError:
+                sys.stderr.write("%s: malformed `%s' option: %s\n"
+                                 % (sys.argv[0], name, opt[name]))
+                sys.exit(1)
+            subst = type(value)(opt[value[start_ + 2:stop_]])
+            value = value[:start_] + subst + value[stop_ + 1:]
+            pos = start_ + len(subst)
+        opt[name] = value
+
     pin_count = opt['total-pin-count']
     eff_pin_count = opt['pins-per-row']
     style = opt['style']
