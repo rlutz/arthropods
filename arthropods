@@ -191,7 +191,7 @@ def main():
 
     try:
         options, args = getopt.getopt(
-            sys.argv[1:], 'r:n:s:d:p:', [
+            sys.argv[1:], '', [
                 'name=',
                 'row-count=', 'numbering-scheme=', 'style=',
                 'row-distance=', 'pad-length=',
@@ -217,12 +217,12 @@ def main():
     for option, value in options:
         if option == '--name':
             name = value
-        elif option in ['-r', '--row-count']:
+        elif option == '--row-count':
             try:
                 rows = int(value)
             except KeyError:
                 invalid_arguments("`%s' is not an integer" % value)
-        elif option in ['-n', '--numbering-scheme']:
+        elif option == '--numbering-scheme':
             try:
                 shape = { 'zigzag': SHAPE_ZIGZAG,
                           'u-shaped': SHAPE_USHAPED,
@@ -232,7 +232,7 @@ def main():
             except KeyError:
                 invalid_arguments("`%s' is not a valid numbering scheme"
                                   % value)
-        elif option in ['-s', '--style']:
+        elif option == '--style':
             try:
                 style = { 'thickened': STYLE_THICKENED,
                           'dent': STYLE_DENT,
@@ -244,9 +244,9 @@ def main():
                 }[value]
             except KeyError:
                 invalid_arguments("`%s' is not a valid silk style" % value)
-        elif option in ['-d', '--row-distance']:
+        elif option == '--row-distance':
             row_distance = parse(value)
-        elif option in ['-p', '--pad-length']:
+        elif option == '--pad-length':
             pad_length = parse(value)
         elif option == '--line-thickness':
             line_thickness = parse(value)
@@ -270,21 +270,20 @@ Usage: %s PIN_COUNT
 Generate footprints for arthropodic components
 
       --name=NAME       component name (only used for the "Element[...]" line)
-      -r, --row-count=1|2
-                        number of rows of pins
-      -n, --numbering-scheme=zigzag|u-shaped|ab|ba
+      --row-count=1|2   number of rows of pins
+      --numbering-scheme=zigzag|u-shaped|ab|ba
                         pin numbering scheme (only relevant for >1 rows)
           zigzag        first row is numbered 1,3..N-1, second row 2,4..N
           u-shaped      first row is numbered 1,2..N/2, second row N,N-1..N/2+1
           ab            first row is numbered A1..An, second row B1..Bn
           ba            first row is numbered B1..Bn, second row A1..An
 
-      -s, --style=thickened|dent|boxed|socket|wsl-arrow|wsl-dent|psl
+      --style=thickened|dent|boxed|socket|wsl-arrow|wsl-dent|psl
                         use this style to indicate pin 1 on the silk layer
 
-      -d, --row-distance=DISTANCE	[default: %s]
+      --row-distance=DISTANCE	[default: %s]
                         distance between the rows
-      -p, --pad-length=LENGTH		[default: %s]
+      --pad-length=LENGTH	[default: %s]
                         length of the solder pads
 
       --line-thickness=Xmm|Xmil	[default: %s]
