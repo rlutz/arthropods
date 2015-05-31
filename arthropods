@@ -57,18 +57,33 @@ def mm(v): return Nanometers(int(v * 1000000), MM)
 def mil(v): return Nanometers(int(v * 25400), MIL)
 zero = Nanometers(0, ZERO)
 
-line_thickness = mil(10.)
+STYLE_THICKENED, STYLE_DENT, STYLE_BOXED, STYLE_SOCKET, \
+    STYLE_WSL_ARROW, STYLE_WSL_DENT, STYLE_PSL = xrange(7)
+SHAPE_STRAIGHT, SHAPE_ZIGZAG, SHAPE_USHAPED, SHAPE_AB, SHAPE_BA = xrange(5)
 
-pin_thickness = mm(1.5)
-pin_clearance = mm(1.4)
-pin_mask = mm(1.7)
-pin_drill = mm(1.)
+opt = {
+    'name': None,
+    'pins-per-row': None,
+    'total-pin-count': None,
 
-pad_thickness = mm(1.492)
-pad_clearance = mm(1.4)
-pad_mask = mm(1.69)
+    'row-count': 1,
+    'numbering-scheme': None,
+    'style': STYLE_THICKENED,
 
-pad_length = mil(50.)
+    'row-distance': mil(100.),
+    'pad-length': mil(50.),
+
+    'line-thickness': mil(10.),
+
+    'pin-thickness': mm(1.5),
+    'pin-clearance': mm(1.4),
+    'pin-mask': mm(1.7),
+    'pin-drill': mm(1.),
+
+    'pad-thickness': mm(1.492),
+    'pad-clearance': mm(1.4),
+    'pad-mask': mm(1.69)
+}
 
 # Formatting a number of nanometers to a string in mm or mil.
 
@@ -122,7 +137,8 @@ def start(flags, desc, name, value, mark_x, mark_y,
     print '('
 
 def pin(x, y, name, number = None, flags = None):
-    custom_pin(x, y, pin_thickness, pin_clearance, pin_mask, pin_drill,
+    custom_pin(x, y, opt['pin-thickness'], opt['pin-clearance'],
+                     opt['pin-mask'], opt['pin-drill'],
                name, number, flags)
 
 def custom_pin(x, y, thickness, clearance, mask, drill,
@@ -148,28 +164,24 @@ def pad(x0, y0, x1, y1, name, number = None, flags = None):
         flags = ""
     print "\tPad[%s %s %s %s %s %s %s \"%s\" \"%s\" \"%s\"]" % (
         pcb_format(x0), pcb_format(y0), pcb_format(x1), pcb_format(y1),
-        pcb_format(pad_thickness), pcb_format(pad_clearance),
-        pcb_format(pad_mask), name, number, flags)
+        pcb_format(opt['pad-thickness']), pcb_format(opt['pad-clearance']),
+        pcb_format(opt['pad-mask']), name, number, flags)
 
 def line(x0, y0, x1, y1):
     print "\tElementLine [%s %s %s %s %s]" % (
         pcb_format(x0), pcb_format(y0), pcb_format(x1), pcb_format(y1),
-        pcb_format(line_thickness))
+        pcb_format(opt['line-thickness']))
 
 def arc(x, y, xradius, yradius, start_angle, delta_angle):
     print "\tElementArc [%s %s %s %s %d %d %s]" % (
         pcb_format(x), pcb_format(y), pcb_format(xradius), pcb_format(yradius),
-        start_angle, delta_angle, pcb_format(line_thickness))
+        start_angle, delta_angle, pcb_format(opt['line-thickness']))
 
 def end():
     print
     print "\t)"
 
 # Parameter handling
-
-STYLE_THICKENED, STYLE_DENT, STYLE_BOXED, STYLE_SOCKET, \
-    STYLE_WSL_ARROW, STYLE_WSL_DENT, STYLE_PSL = xrange(7)
-SHAPE_STRAIGHT, SHAPE_ZIGZAG, SHAPE_USHAPED, SHAPE_AB, SHAPE_BA = xrange(5)
 
 def invalid_arguments(message):
     sys.stderr.write("%s: %s\n" % (sys.argv[0], message))
@@ -188,10 +200,6 @@ def parse(length):
     return { 'mm': mm, 'mil': mil }[unit](length)
 
 def main():
-    global pad_length
-    global line_thickness, pin_thickness, pin_clearance, pin_mask, pin_drill, \
-           pad_thickness, pad_clearance, pad_mask
-
     try:
         options, args = getopt.getopt(
             sys.argv[1:], 'p:P:', [
@@ -211,74 +219,68 @@ def main():
     except getopt.GetoptError as e:
         invalid_arguments(e.msg)
 
-    name = None
-    eff_pin_count = None
-    pin_count = None
-    style = STYLE_THICKENED
-    rows = 1
-    shape = SHAPE_STRAIGHT
-    row_distance = mil(100.)
-
     for option, value in options:
         if option == '--name':
-            name = value
+            opt['name'] = value
         elif option in ['-p', '--pins-per-row']:
             try:
-                eff_pin_count = int(value)
+                opt['pins-per-row'] = int(value)
             except ValueError:
                 invalid_arguments("`%s' is not an integer" % value)
         elif option in ['-P', '--total-pin-count']:
             try:
-                pin_count = int(value)
+                opt['total-pin-count'] = int(value)
             except ValueError:
                 invalid_arguments("`%s' is not an integer" % value)
         elif option == '--row-count':
             try:
-                rows = int(value)
+                opt['row-count'] = int(value)
             except KeyError:
                 invalid_arguments("`%s' is not an integer" % value)
         elif option == '--numbering-scheme':
             try:
-                shape = { 'zigzag': SHAPE_ZIGZAG,
-                          'u-shaped': SHAPE_USHAPED,
-                          'ab': SHAPE_AB,
-                          'ba': SHAPE_BA
+                opt['numbering-scheme'] = {
+                    'zigzag': SHAPE_ZIGZAG,
+                    'u-shaped': SHAPE_USHAPED,
+                    'ab': SHAPE_AB,
+                    'ba': SHAPE_BA
                 }[value]
             except KeyError:
                 invalid_arguments("`%s' is not a valid numbering scheme"
                                   % value)
         elif option == '--style':
             try:
-                style = { 'thickened': STYLE_THICKENED,
-                          'dent': STYLE_DENT,
-                          'boxed': STYLE_BOXED,
-                          'socket': STYLE_SOCKET,
-                          'wsl-arrow': STYLE_WSL_ARROW,
-                          'wsl-dent': STYLE_WSL_DENT,
-                          'psl': STYLE_PSL
+                opt['style'] = {
+                    'thickened': STYLE_THICKENED,
+                    'dent': STYLE_DENT,
+                    'boxed': STYLE_BOXED,
+                    'socket': STYLE_SOCKET,
+                    'wsl-arrow': STYLE_WSL_ARROW,
+                    'wsl-dent': STYLE_WSL_DENT,
+                    'psl': STYLE_PSL
                 }[value]
             except KeyError:
                 invalid_arguments("`%s' is not a valid silk style" % value)
         elif option == '--row-distance':
-            row_distance = parse(value)
+            opt['row-distance'] = parse(value)
         elif option == '--pad-length':
-            pad_length = parse(value)
+            opt['pad-length'] = parse(value)
         elif option == '--line-thickness':
-            line_thickness = parse(value)
+            opt['line-thickness'] = parse(value)
         elif option == '--pin-thickness':
-            pin_thickness = parse(value)
+            opt['pin-thickness'] = parse(value)
         elif option == '--pin-clearance':
-            pin_clearance = parse(value)
+            opt['pin-clearance'] = parse(value)
         elif option == '--pin-mask':
-            pin_mask = parse(value)
+            opt['pin-mask'] = parse(value)
         elif option == '--pin-drill':
-            pin_drill = parse(value)
+            opt['pin-drill'] = parse(value)
         elif option == '--pad-thickness':
-            pad_thickness = parse(value)
+            opt['pad-thickness'] = parse(value)
         elif option == '--pad-clearance':
-            pad_clearance = parse(value)
+            opt['pad-clearance'] = parse(value)
         elif option == '--pad-mask':
-            pad_mask = parse(value)
+            opt['pad-mask'] = parse(value)
         elif option == '--help':
             sys.stdout.write("""\
 Usage: %s OPTION...
@@ -317,12 +319,16 @@ Generate footprints for arthropodic components
       --help            give this help
       --version         display version number
 """ % (sys.argv[0],
-       user_format(row_distance), user_format(pad_length),
-       user_format(line_thickness),
-       user_format(pin_thickness), user_format(pin_clearance),
-         user_format(pin_mask), user_format(pin_drill),
-       user_format(pad_thickness), user_format(pad_clearance),
-         user_format(pad_mask)))
+       user_format(opt['row-distance']),
+       user_format(opt['pad-length']),
+       user_format(opt['line-thickness']),
+       user_format(opt['pin-thickness']),
+       user_format(opt['pin-clearance']),
+       user_format(opt['pin-mask']),
+       user_format(opt['pin-drill']),
+       user_format(opt['pad-thickness']),
+       user_format(opt['pad-clearance']),
+       user_format(opt['pad-mask'])))
             sys.exit(0)
         elif option == '--version':
             sys.stdout.write("""\
@@ -343,13 +349,13 @@ GNU General Public License for more details.
         else:
             raise AssertionError
 
-    if name is None:
+    if opt['name'] is None:
         invalid_arguments("Missing --name= option")
-    if eff_pin_count is None and pin_count is None:
+    if opt['pins-per-row'] is None and opt['total-pin-count'] is None:
         invalid_arguments("Missing --pins-per-row= or "
                           "--total-pin-count= option")
-    if eff_pin_count is not None and pin_count is not None \
-           and eff_pin_count * rows != pin_count:
+    if opt['pins-per-row'] is not None and opt['total-pin-count'] is not None \
+           and opt['pins-per-row'] * opt['row-count'] != opt['total-pin-count']:
         invalid_arguments("Conflicting values for --pins-per-row= and "
                           "--total-pin-count= given")
 
@@ -359,22 +365,29 @@ GNU General Public License for more details.
                          % sys.argv[0])
         sys.exit(1)
 
-    if rows == 1:
+    if opt['row-count'] == 1:
         shape = SHAPE_STRAIGHT
-        row_distance = zero
-    elif rows == 2:
-        if shape == SHAPE_STRAIGHT:
+        opt['row-distance'] = zero
+    elif opt['row-count'] == 2:
+        shape = opt['numbering-scheme']
+        if shape is None:
             invalid_arguments("Numbering scheme must be specified "
                               "for 2-row footprint")
     else:
         invalid_arguments("Row count must be 1 or 2")
 
-    if eff_pin_count is None:
-        if pin_count % rows != 0:
+    if opt['pins-per-row'] is None:
+        if opt['total-pin-count'] % opt['row-count'] != 0:
             invalid_arguments("Total pin count must be divisible by row count")
-        eff_pin_count = pin_count // rows
+        opt['pins-per-row'] = opt['total-pin-count'] // opt['row-count']
     else:
-        pin_count = eff_pin_count * rows
+        opt['total-pin-count'] = opt['pins-per-row'] * opt['row-count']
+
+    pin_count = opt['total-pin-count']
+    eff_pin_count = opt['pins-per-row']
+    style = opt['style']
+    row_distance = opt['row-distance']
+    pad_length = opt['pad-length']
 
     # Calculate dimensions
 
@@ -411,7 +424,7 @@ GNU General Public License for more details.
             invalid_arguments(
                 "This style does not work with a custom row distance")
 
-    start(None, name, name, name, zero, zero,
+    start(None, opt['name'], opt['name'], opt['name'], zero, zero,
           text_x, text_y, text_dir, text_scale, None)
 
     for i in xrange(0, eff_pin_count):
