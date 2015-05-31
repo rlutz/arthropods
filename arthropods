@@ -62,14 +62,7 @@ STYLE_THICKENED, STYLE_DENT, STYLE_BOXED, STYLE_SOCKET, \
 SHAPE_STRAIGHT, SHAPE_ZIGZAG, SHAPE_USHAPED, SHAPE_AB, SHAPE_BA = xrange(5)
 
 opt_defaults = {
-    'name': None,
-    'pins-per-row': None,
-    'total-pin-count': None,
-
     'row-count': 1,
-    'numbering-scheme': None,
-    'style': STYLE_THICKENED,
-
     'row-distance': mil(100.),
     'pad-length': mil(50.),
 
@@ -84,7 +77,7 @@ opt_defaults = {
     'pad-clearance': mm(1.4),
     'pad-mask': mm(1.69)
 }
-opt = opt_defaults.copy()
+opt = {}
 
 # Formatting a number of nanometers to a string in mm or mil.
 
@@ -184,21 +177,80 @@ def end():
 
 # Parameter handling
 
-def invalid_arguments(message):
-    sys.stderr.write("%s: %s\n" % (sys.argv[0], message))
-    sys.stderr.write("Try `%s --help' for more information.\n" % sys.argv[0])
-    sys.exit(1)
+class OptionError(Exception):
+    pass
 
 def parse(length):
     """Parse a string in mm or mil to a number of nanometers."""
     unit = next(unit for unit in ['mm', 'mil', ''] if length.endswith(unit))
     if not isinstance(length, basestring) or not unit:
-        invalid_arguments("`%s' is not a length in mm or mil" % length)
+        raise OptionError, "`%s' is not a length in mm or mil" % length
     if '.' in length:
         length = float(length[:-len(unit)])
     else:
         length = int(length[:-len(unit)])
     return { 'mm': mm, 'mil': mil }[unit](length)
+
+def set_option(opt, name, value):
+    if name == 'name':
+        pass
+    elif name in ['pins-per-row', 'total-pin-count', 'row-count']:
+        try:
+            value = int(value)
+        except KeyError:
+            raise OptionError, "`%s' is not an integer" % value
+    elif name == 'numbering-scheme':
+        try:
+            value = {
+                'zigzag': SHAPE_ZIGZAG,
+                'u-shaped': SHAPE_USHAPED,
+                'ab': SHAPE_AB,
+                'ba': SHAPE_BA
+            }[value]
+        except KeyError:
+            raise OptionError, "`%s' is not a valid numbering scheme" % value
+    elif name == 'style':
+        try:
+            value = {
+                'thickened': STYLE_THICKENED,
+                'dent': STYLE_DENT,
+                'boxed': STYLE_BOXED,
+                'socket': STYLE_SOCKET,
+                'wsl-arrow': STYLE_WSL_ARROW,
+                'wsl-dent': STYLE_WSL_DENT,
+                'psl': STYLE_PSL
+            }[value]
+        except KeyError:
+            raise OptionError, "`%s' is not a valid silk style" % value
+    elif name in ['row-distance',
+                  'pad-length',
+                  'line-thickness',
+                  'pin-thickness',
+                  'pin-clearance',
+                  'pin-mask',
+                  'pin-drill',
+                  'pad-thickness',
+                  'pad-clearance',
+                  'pad-mask']:
+        value = parse(value)
+    else:
+        raise OptionError, "unknown option `%s'" % name
+
+    if name in opt and opt[name] is None:
+        raise OptionError, "can't give both pins-per-row and total-pin-count"
+    if name in opt and opt[name] != value:
+        raise OptionError, "conflicting values for %s given " \
+                           "(`%s' and `%s')" % (name, opt[name], value)
+    opt[name] = value
+    if name == 'pins-per-row':
+        opt['total-pin-count'] = None
+    if name == 'total-pin-count':
+        opt['pins-per-row'] = None
+
+def invalid_arguments(message):
+    sys.stderr.write("%s: %s\n" % (sys.argv[0], message))
+    sys.stderr.write("Try `%s --help' for more information.\n" % sys.argv[0])
+    sys.exit(1)
 
 def main():
     try:
@@ -221,68 +273,7 @@ def main():
         invalid_arguments(e.msg)
 
     for option, value in options:
-        if option == '--name':
-            opt['name'] = value
-        elif option in ['-p', '--pins-per-row']:
-            try:
-                opt['pins-per-row'] = int(value)
-            except ValueError:
-                invalid_arguments("`%s' is not an integer" % value)
-        elif option in ['-P', '--total-pin-count']:
-            try:
-                opt['total-pin-count'] = int(value)
-            except ValueError:
-                invalid_arguments("`%s' is not an integer" % value)
-        elif option == '--row-count':
-            try:
-                opt['row-count'] = int(value)
-            except KeyError:
-                invalid_arguments("`%s' is not an integer" % value)
-        elif option == '--numbering-scheme':
-            try:
-                opt['numbering-scheme'] = {
-                    'zigzag': SHAPE_ZIGZAG,
-                    'u-shaped': SHAPE_USHAPED,
-                    'ab': SHAPE_AB,
-                    'ba': SHAPE_BA
-                }[value]
-            except KeyError:
-                invalid_arguments("`%s' is not a valid numbering scheme"
-                                  % value)
-        elif option == '--style':
-            try:
-                opt['style'] = {
-                    'thickened': STYLE_THICKENED,
-                    'dent': STYLE_DENT,
-                    'boxed': STYLE_BOXED,
-                    'socket': STYLE_SOCKET,
-                    'wsl-arrow': STYLE_WSL_ARROW,
-                    'wsl-dent': STYLE_WSL_DENT,
-                    'psl': STYLE_PSL
-                }[value]
-            except KeyError:
-                invalid_arguments("`%s' is not a valid silk style" % value)
-        elif option == '--row-distance':
-            opt['row-distance'] = parse(value)
-        elif option == '--pad-length':
-            opt['pad-length'] = parse(value)
-        elif option == '--line-thickness':
-            opt['line-thickness'] = parse(value)
-        elif option == '--pin-thickness':
-            opt['pin-thickness'] = parse(value)
-        elif option == '--pin-clearance':
-            opt['pin-clearance'] = parse(value)
-        elif option == '--pin-mask':
-            opt['pin-mask'] = parse(value)
-        elif option == '--pin-drill':
-            opt['pin-drill'] = parse(value)
-        elif option == '--pad-thickness':
-            opt['pad-thickness'] = parse(value)
-        elif option == '--pad-clearance':
-            opt['pad-clearance'] = parse(value)
-        elif option == '--pad-mask':
-            opt['pad-mask'] = parse(value)
-        elif option == '--help':
+        if option == '--help':
             sys.stdout.write("""\
 Usage: %s OPTION...
 Generate footprints for arthropodic components
@@ -348,17 +339,15 @@ GNU General Public License for more details.
 """)
             sys.exit(0)
         else:
-            raise AssertionError
-
-    if opt['name'] is None:
-        invalid_arguments("Missing --name= option")
-    if opt['pins-per-row'] is None and opt['total-pin-count'] is None:
-        invalid_arguments("Missing --pins-per-row= or "
-                          "--total-pin-count= option")
-    if opt['pins-per-row'] is not None and opt['total-pin-count'] is not None \
-           and opt['pins-per-row'] * opt['row-count'] != opt['total-pin-count']:
-        invalid_arguments("Conflicting values for --pins-per-row= and "
-                          "--total-pin-count= given")
+            option = {
+                '-p': '--pins-per-row',
+                '-P': '--total-pin-count',
+            }.get(option, option)
+            assert option.startswith('--')
+            try:
+                set_option(opt, option[2:], value)
+            except OptionError as e:
+                invalid_arguments(e.message)
 
     if args:
         sys.stdout.write("Usage: %s OPTION...\n" % sys.argv[0])
@@ -366,14 +355,29 @@ GNU General Public License for more details.
                          % sys.argv[0])
         sys.exit(1)
 
+    for name in opt_defaults:
+        if name not in opt:
+            opt[name] = opt_defaults[name]
+
+    for name in ['name', 'row-count', 'style', 'pad-length', 'line-thickness',
+                 'pin-thickness', 'pin-clearance', 'pin-mask', 'pin-drill',
+                 'pad-thickness', 'pad-clearance', 'pad-mask']:
+        if name not in opt:
+            invalid_arguments("Missing `%s' option" % name)
+    if 'pins-per-row' not in opt and 'total-pin-count' not in opt:
+        invalid_arguments("Missing `pins-per-row' or `total-pin-count' option")
+
     if opt['row-count'] == 1:
         shape = SHAPE_STRAIGHT
         opt['row-distance'] = zero
     elif opt['row-count'] == 2:
-        shape = opt['numbering-scheme']
-        if shape is None:
+        if 'numbering-scheme' not in opt:
             invalid_arguments("Numbering scheme must be specified "
                               "for 2-row footprint")
+        if 'row-distance' not in opt:
+            invalid_arguments("Row distance must be specified "
+                              "for 2-row footprint")
+        shape = opt['numbering-scheme']
     else:
         invalid_arguments("Row count must be 1 or 2")
 
