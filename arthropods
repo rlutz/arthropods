@@ -442,18 +442,14 @@ GNU General Public License for more details.
     if 'pins-per-row' not in opt and 'total-pin-count' not in opt:
         invalid_arguments("Missing `pins-per-row' or `total-pin-count' option")
 
-    if opt['row-count'] == 1:
-        shape = SHAPE_STRAIGHT
-        opt['row-distance'] = zero
-    elif opt['row-count'] == 2:
+    if opt['row-count'] == 2:
         if 'numbering-scheme' not in opt:
             invalid_arguments("Numbering scheme must be specified "
                               "for 2-row footprint")
         if 'row-distance' not in opt:
             invalid_arguments("Row distance must be specified "
                               "for 2-row footprint")
-        shape = opt['numbering-scheme']
-    else:
+    elif opt['row-count'] != 1:
         invalid_arguments("Row count must be 1 or 2")
 
     if opt['pins-per-row'] is None:
@@ -466,8 +462,13 @@ GNU General Public License for more details.
     pin_count = opt['total-pin-count']
     eff_pin_count = opt['pins-per-row']
     style = opt['style']
-    row_distance = opt['row-distance']
     pad_length = opt['pad-length']
+    if opt['row-count'] == 1:
+        shape = SHAPE_STRAIGHT
+        row_distance = zero
+    else:
+        shape = opt['numbering-scheme']
+        row_distance = opt['row-distance']
 
     # Calculate dimensions
 
