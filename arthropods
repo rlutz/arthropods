@@ -425,7 +425,7 @@ GNU General Public License for more details.
         finally:
             config_file.close()
     else:
-        sys.stdout.write("Usage: %s OPTION...\n" % sys.argv[0])
+        sys.stderr.write("Usage: %s OPTION...\n" % sys.argv[0])
         sys.stderr.write("Try `%s --help' for more information.\n"
                          % sys.argv[0])
         sys.exit(1)
