@@ -191,8 +191,8 @@ def main():
 
     try:
         options, args = getopt.getopt(
-            sys.argv[1:], '', [
-                'name=', 'pin-count=',
+            sys.argv[1:], 'p:P:', [
+                'name=', 'pins-per-row=', 'total-pin-count=',
                 'row-count=', 'numbering-scheme=', 'style=',
                 'row-distance=', 'pad-length=',
                 'line-thickness=',
@@ -209,6 +209,7 @@ def main():
         invalid_arguments(e.msg)
 
     name = None
+    eff_pin_count = None
     pin_count = None
     style = STYLE_THICKENED
     rows = 1
@@ -218,7 +219,12 @@ def main():
     for option, value in options:
         if option == '--name':
             name = value
-        elif option == '--pin-count':
+        elif option in ['-p', '--pins-per-row']:
+            try:
+                eff_pin_count = int(value)
+            except ValueError:
+                invalid_arguments("`%s' is not an integer" % value)
+        elif option in ['-P', '--total-pin-count']:
             try:
                 pin_count = int(value)
             except ValueError:
@@ -276,7 +282,10 @@ Usage: %s OPTION...
 Generate footprints for arthropodic components
 
       --name=NAME       component name (only used for the "Element[...]" line)
-      --pin-count=N     number of pins
+      -p, --pins-per-row=N
+                        number of pins per row
+      -P, --total-pin-count=N
+                        total number of pins in the footprint
       --row-count=1|2   number of rows of pins
       --numbering-scheme=zigzag|u-shaped|ab|ba
                         pin numbering scheme (only relevant for >1 rows)
@@ -333,8 +342,13 @@ GNU General Public License for more details.
 
     if name is None:
         invalid_arguments("Missing --name= option")
-    if pin_count is None:
-        invalid_arguments("Missing --pin-count= option")
+    if eff_pin_count is None and pin_count is None:
+        invalid_arguments("Missing --pins-per-row= or "
+                          "--total-pin-count= option")
+    if eff_pin_count is not None and pin_count is not None \
+           and eff_pin_count * rows != pin_count:
+        invalid_arguments("Conflicting values for --pins-per-row= and "
+                          "--total-pin-count= given")
 
     if args:
         sys.stdout.write("Usage: %s OPTION...\n" % sys.argv[0])
@@ -352,10 +366,12 @@ GNU General Public License for more details.
     else:
         invalid_arguments("Row count must be 1 or 2")
 
-    if shape != SHAPE_STRAIGHT and pin_count % 2 != 0:
-        invalid_arguments("Pin count for zigzag/u-shaped/AB/BA must be even")
-
-    eff_pin_count = pin_count // rows
+    if eff_pin_count is None:
+        if pin_count % rows != 0:
+            invalid_arguments("Total pin count must be divisible by row count")
+        eff_pin_count = pin_count // rows
+    else:
+        pin_count = eff_pin_count * rows
 
     # Calculate dimensions
 
