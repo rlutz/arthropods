@@ -121,8 +121,12 @@ def start(flags, desc, name, value, mark_x, mark_y,
         text_dir, text_scale, text_flags)
     print '('
 
-def pin(x, y, thickness, clearance, mask, drill,
-        name, number = None, flags = None):
+def pin(x, y, name, number = None, flags = None):
+    custom_pin(x, y, pin_thickness, pin_clearance, pin_mask, pin_drill,
+               name, number, flags)
+
+def custom_pin(x, y, thickness, clearance, mask, drill,
+               name, number = None, flags = None):
     if number is None:
         number = name
     if isinstance(flags, list):
@@ -135,8 +139,7 @@ def pin(x, y, thickness, clearance, mask, drill,
         pcb_format(mask), pcb_format(drill),
         name, number, flags)
 
-def pad(x0, y0, x1, y1, thickness, clearance, mask,
-        name, number = None, flags = None):
+def pad(x0, y0, x1, y1, name, number = None, flags = None):
     if number is None:
         number = name
     if isinstance(flags, list):
@@ -145,8 +148,8 @@ def pad(x0, y0, x1, y1, thickness, clearance, mask,
         flags = ""
     print "\tPad[%s %s %s %s %s %s %s \"%s\" \"%s\" \"%s\"]" % (
         pcb_format(x0), pcb_format(y0), pcb_format(x1), pcb_format(y1),
-        pcb_format(thickness), pcb_format(clearance), pcb_format(mask),
-        name, number, flags)
+        pcb_format(pad_thickness), pcb_format(pad_clearance),
+        pcb_format(pad_mask), name, number, flags)
 
 def line(x0, y0, x1, y1):
     print "\tElementLine [%s %s %s %s %s]" % (
@@ -434,36 +437,22 @@ GNU General Public License for more details.
             i0, i1 = 'B%d' % (i + 1), 'A%d' % (i + 1)
 
         if shape == SHAPE_STRAIGHT:
-            pin(zero, y, pin_thickness, pin_clearance, pin_mask, pin_drill,
-                i + 1, flags = maybe_square)
+            pin(zero, y, i + 1, flags = maybe_square)
             pad(-pad_length / 2, y, pad_length / 2, y,
-                pad_thickness, pad_clearance, pad_mask,
                 i + 1, flags = ['onsolder'] + maybe_square)
         elif row_distance < mil(100.) + pad_length:
-            pin(zero, y,
-                pin_thickness, pin_clearance, pin_mask, pin_drill,
-                i0, flags = maybe_square)
-            pin(width, y,
-                pin_thickness, pin_clearance, pin_mask, pin_drill,
-                i1, flags = other_maybe_square)
+            pin(zero, y, i0, flags = maybe_square)
+            pin(width, y, i1, flags = other_maybe_square)
             pad(-pad_length, y, zero, y,
-                pad_thickness, pad_clearance, pad_mask,
                 i0, flags = ['onsolder'] + maybe_square)
             pad(width, y, width + pad_length, y,
-                pad_thickness, pad_clearance, pad_mask,
                 i1, flags = ['onsolder', 'edge2'] + other_maybe_square)
         else:
-            pin(zero, y,
-                pin_thickness, pin_clearance, pin_mask, pin_drill,
-                i0, flags = maybe_square)
+            pin(zero, y, i0, flags = maybe_square)
             pad(-pad_length / 2, y, pad_length / 2, y,
-                pad_thickness, pad_clearance, pad_mask,
                 i0, flags = ['onsolder'] + maybe_square)
-            pin(width, y,
-                pin_thickness, pin_clearance, pin_mask, pin_drill,
-                i1, flags = other_maybe_square)
+            pin(width, y, i1, flags = other_maybe_square)
             pad(width - pad_length / 2, y, width + pad_length / 2, y,
-                pad_thickness, pad_clearance, pad_mask,
                 i1, flags = ['onsolder', 'edge2'] + other_maybe_square)
 
     # Paint outline
@@ -522,8 +511,8 @@ GNU General Public License for more details.
              x0, height / 2 + mil(100.))
     elif style == STYLE_PSL:
         # bottom part
-        pin(mil(50.), height + mil(231.10),
-            mil(147.80), mil(121.37), mil(151.74), mil(118.11), 0)
+        custom_pin(mil(50.), height + mil(231.10),
+                   mil(147.80), mil(121.37), mil(151.74), mil(118.11), 0)
         line(mil(299.21), height + mil(427.75),
              mil(929.13), height + mil(683.66))
         line(mil(653.54), height + mil(408.07),
@@ -554,8 +543,8 @@ GNU General Public License for more details.
             mil(59.06), mil(59.06), 90, 90)
 
         # top part
-        pin(mil(50.), mil(-231.10),
-            mil(147.80), mil(123.37), mil(151.74), mil(118.11), 0)
+        custom_pin(mil(50.), mil(-231.10),
+                   mil(147.80), mil(123.37), mil(151.74), mil(118.11), 0)
         line(mil(299.21), mil(-427.75), mil(929.13), mil(-683.66))
         line(mil(653.54), mil(-408.07), mil(968.50), mil(-604.92))
         line(mil(653.54), mil(-152.16), mil(456.69), mil(-152.16))
