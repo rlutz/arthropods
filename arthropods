@@ -191,9 +191,8 @@ def main():
 
     try:
         options, args = getopt.getopt(
-            sys.argv[1:], 'r:s:ZUABd:p:', [
-                'row-count=', 'style=',
-                'straight', 'zigzag', 'u-shaped', 'ab', 'ba',
+            sys.argv[1:], 'r:n:s:d:p:', [
+                'row-count=', 'numbering-scheme=', 'style=',
                 'row-distance=', 'pad-length=',
                 'line-thickness=',
                 'pin-thickness=',
@@ -219,6 +218,16 @@ def main():
                 rows = int(value)
             except KeyError:
                 invalid_arguments("`%s' is not an integer" % value)
+        elif option in ['-n', '--numbering-scheme']:
+            try:
+                shape = { 'zigzag': SHAPE_ZIGZAG,
+                          'u-shaped': SHAPE_USHAPED,
+                          'ab': SHAPE_AB,
+                          'ba': SHAPE_BA
+                }[value]
+            except KeyError:
+                invalid_arguments("`%s' is not a valid numbering scheme"
+                                  % value)
         elif option in ['-s', '--style']:
             try:
                 style = { 'thickened': STYLE_THICKENED,
@@ -231,16 +240,6 @@ def main():
                 }[value]
             except KeyError:
                 invalid_arguments("`%s' is not a valid silk style" % value)
-        elif option == '--straight':
-            shape = SHAPE_STRAIGHT
-        elif option in ['-Z', '--zigzag']:
-            shape = SHAPE_ZIGZAG
-        elif option in ['-U', '--u-shaped']:
-            shape = SHAPE_USHAPED
-        elif option in ['-A', '--ab']:
-            shape = SHAPE_AB
-        elif option in ['-B', '--ba']:
-            shape = SHAPE_BA
         elif option in ['-d', '--row-distance']:
             row_distance = parse(value)
         elif option in ['-p', '--pad-length']:
@@ -268,14 +267,15 @@ Generate footprints for arthropodic components
 
       -r, --row-count=1|2
                         number of rows of pins
+      -n, --numbering-scheme=zigzag|u-shaped|ab|ba
+                        pin numbering scheme (only relevant for >1 rows)
+          zigzag        first row is numbered 1,3..N-1, second row 2,4..N
+          u-shaped      first row is numbered 1,2..N/2, second row N,N-1..N/2+1
+          ab            first row is numbered A1..An, second row B1..Bn
+          ba            first row is numbered B1..Bn, second row A1..An
+
       -s, --style=thickened|dent|boxed|socket|wsl-arrow|wsl-dent|psl
                         use this style to indicate pin 1 on the silk layer
-
-      --straight        one straight row of pins
-      -Z, --zigzag      two rows of pins, numbered in zig-zag
-      -U, --u-shaped    two rows of pins, numbered in an U shape
-      -A, --ab          two rows of pins, numbered A1..An and B1..Bn
-      -B, --ba          two rows of pins, numbered B1..Bn and A1..An
 
       -d, --row-distance=DISTANCE	[default: %s]
                         distance between the rows
@@ -338,7 +338,7 @@ GNU General Public License for more details.
         row_distance = zero
     elif rows == 2:
         if shape == SHAPE_STRAIGHT:
-            invalid_arguments("Can't use straight numbering "
+            invalid_arguments("Numbering scheme must be specified "
                               "for 2-row footprint")
     else:
         invalid_arguments("Row count must be 1 or 2")
