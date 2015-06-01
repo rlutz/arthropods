@@ -1,5 +1,6 @@
 pin-distance = 100mil
-pad-length = 50mil
+outer-pad-length = 25mil
+inner-pad-length = 25mil
 
 line-thickness = 10mil
 

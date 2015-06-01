@@ -213,7 +213,8 @@ def set_option(opt, name, value):
             raise OptionError, "`%s' is not a valid silk style" % value
     elif name in ['pin-distance',
                   'row-distance',
-                  'pad-length',
+                  'outer-pad-length',
+                  'inner-pad-length',
                   'line-thickness',
                   'pin-thickness',
                   'pin-clearance',
@@ -302,7 +303,8 @@ def main():
                 'variety=',
                 'name=', 'output-file=', 'pins-per-row=', 'total-pin-count=',
                 'row-count=', 'numbering-scheme=', 'style=',
-                'pin-distance=', 'row-distance=', 'pad-length=',
+                'pin-distance=', 'row-distance=',
+                'outer-pad-length=', 'inner-pad-length=',
                 'line-thickness=',
                 'pin-thickness=',
                 'pin-clearance=',
@@ -350,8 +352,10 @@ Generate footprints for arthropodic components
                         distance between the pins
       --row-distance=DISTANCE
                         distance between the rows
-      --pad-length=LENGTH
-                        length of the solder pads
+      --outer-pad-length=LENGTH
+                        length of the solder pads on the outside
+      --inner-pad-length=LENGTH
+                        length of the solder pads on the inside
 
       --line-thickness=Xmm|Xmil
       --pin-thickness=Xmm|Xmil
@@ -420,7 +424,8 @@ GNU General Public License for more details.
                 opt[name] = merge_opts[name]
 
     for name in ['name', 'output-file', 'row-count', 'style',
-                 'pin-distance', 'pad-length', 'line-thickness',
+                 'pin-distance', 'outer-pad-length', 'inner-pad-length',
+                 'line-thickness',
                  'pin-thickness', 'pin-clearance', 'pin-mask', 'pin-drill',
                  'pad-thickness', 'pad-clearance', 'pad-mask']:
         if name not in opt:
@@ -477,7 +482,8 @@ GNU General Public License for more details.
     eff_pin_count = opt['pins-per-row']
     style = opt['style']
     pin_distance = opt['pin-distance']
-    pad_length = opt['pad-length']
+    outer_pad_length = opt['outer-pad-length']
+    inner_pad_length = opt['inner-pad-length']
     row_count = opt['row-count']
     if row_count == 1:
         numbering_scheme = SHAPE_ZIGZAG
@@ -546,12 +552,14 @@ GNU General Public License for more details.
             else:
                 maybe_square = []
 
-            offset = zero
-            if row_distance < mil(100.) + pad_length:
-                if j == 0:
-                    offset -= pad_length / 2
-                if j == row_count - 1:
-                    offset += pad_length / 2
+            if j == 0:
+                left_pad_length = outer_pad_length
+            else:
+                left_pad_length = inner_pad_length
+            if j == row_count - 1:
+                right_pad_length = outer_pad_length
+            else:
+                right_pad_length = inner_pad_length
 
             if j != 0:
                 maybe_edge2 = ['edge2']
@@ -560,8 +568,8 @@ GNU General Public License for more details.
 
             pin(j * row_distance, y, name, flags = maybe_square)
 
-            pad(j * row_distance + offset - pad_length / 2, y,
-                j * row_distance + offset + pad_length / 2, y,
+            pad(j * row_distance - left_pad_length, y,
+                j * row_distance + right_pad_length, y,
                 name, flags = ['onsolder'] + maybe_edge2 + maybe_square)
 
     # Paint outline
