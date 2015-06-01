@@ -1,0 +1,32 @@
+row-distance = 100mil
+pin-distance = 100mil
+numbering-scheme = zigzag
+style = corner
+
+outer-pad-length = 0mil
+inner-pad-length = 0mil
+
+line-thickness = 10mil
+
+pin-thickness = 77mil
+pin-clearance = 39.37mil
+pin-mask = 80.94mil
+pin-drill = 1mm
+
+pad-thickness = 1.492mm
+pad-clearance = 1.4mm
+pad-mask = 1.69mm
+
+output-file = footprints/$(name).fp
+
+[variety "JMP_XPIN"]
+	name = JMP_$(pins-per-row)PIN
+	row-count = 1
+
+[variety "JMP_Xx2PIN"]
+	name = JMP_$(pins-per-row)x2PIN
+	row-count = 2
+
+[variety "JMP_Xx3PIN"]
+	name = JMP_$(pins-per-row)x3PIN
+	row-count = 3
