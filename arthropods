@@ -184,8 +184,10 @@ def set_option(opt, name, value):
     elif name in ['pins-per-row', 'total-pin-count', 'row-count']:
         try:
             value = int(value)
-        except KeyError:
-            raise OptionError, "`%s' is not an integer" % value
+            if value < 1:
+                raise ValueError
+        except ValueError:
+            raise OptionError, "`%s' is not a positive integer" % value
     elif name == 'numbering-scheme':
         try:
             value = {
