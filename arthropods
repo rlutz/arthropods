@@ -59,7 +59,7 @@ zero = Nanometers(0, ZERO)
 
 STYLE_THICKENED, STYLE_DENT, STYLE_BOXED, STYLE_SOCKET, \
     STYLE_WSL_ARROW, STYLE_WSL_DENT, STYLE_PSL = xrange(7)
-SHAPE_STRAIGHT, SHAPE_ZIGZAG, SHAPE_USHAPED, SHAPE_AB, SHAPE_BA = xrange(5)
+SHAPE_ZIGZAG, SHAPE_USHAPED, SHAPE_AB, SHAPE_BA = xrange(4)
 
 opt_defaults = {
     'output-file': '-',
@@ -474,8 +474,9 @@ GNU General Public License for more details.
     eff_pin_count = opt['pins-per-row']
     style = opt['style']
     pad_length = opt['pad-length']
-    if opt['row-count'] == 1:
-        shape = SHAPE_STRAIGHT
+    row_count = opt['row-count']
+    if row_count == 1:
+        shape = None
         row_distance = zero
     else:
         shape = opt['numbering-scheme']
@@ -502,7 +503,7 @@ GNU General Public License for more details.
     elif style == STYLE_PSL:
         text_x, text_y, text_dir, text_scale = \
           mil(-68.11), mil(-506.69), 0, 100
-    elif shape == SHAPE_STRAIGHT:
+    elif row_count == 1:
         text_x, text_y, text_dir, text_scale = \
           x1 + mil(70.), y0 + mil(5.), 3, 100
     else:
@@ -510,7 +511,7 @@ GNU General Public License for more details.
           x0, y0 - mil(70.), 0, 100
 
     if style in [STYLE_SOCKET, STYLE_PSL]:
-        if shape == SHAPE_STRAIGHT:
+        if row_count != 2:
             invalid_arguments("This style only works with two pin rows")
         if row_distance != mil(100.):
             invalid_arguments(
@@ -541,7 +542,7 @@ GNU General Public License for more details.
         if shape == SHAPE_BA:
             i0, i1 = 'B%d' % (i + 1), 'A%d' % (i + 1)
 
-        if shape == SHAPE_STRAIGHT:
+        if row_count == 1:
             pin(zero, y, i + 1, flags = maybe_square)
             pad(-pad_length / 2, y, pad_length / 2, y,
                 i + 1, flags = ['onsolder'] + maybe_square)
