@@ -2,7 +2,7 @@ row-count = 2
 row-distance = 100mil
 
 pin-distance = 100mil
-outer-pad-length = 50mil
+outer-pad-length = 25mil
 inner-pad-length = 0mil
 
 line-thickness = 10mil
@@ -22,13 +22,11 @@ output-file = footprints/$(name).fp
 	name = 1x$(pins-per-row)PIN
 	row-count = 1
 	style = thickened
-	outer-pad-length = 25mil
 
 [variety "1xXPINsocket"]
 	name = 1x$(pins-per-row)PINsocket
 	row-count = 1
 	style = socket
-	outer-pad-length = 25mil
 
 [variety "2xXPIN"]
 	name = 2x$(pins-per-row)PIN
