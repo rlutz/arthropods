@@ -327,12 +327,14 @@ def main():
             variety = value
         elif option == '--help':
             sys.stdout.write("""\
-Usage: %s OPTION... [CONFIGURATION-FILE]
+Usage: %s [OPTION]... [CONFIGURATION-FILE]
 Generate footprints for arthropodic components
 
-      -v, --variety=... select variety from configuration file
+      -v, --variety=... which variety (configuration section) to use
       --name=NAME       component name (only used for the "Element[...]" line)
-      --output-file     place the output into a file (or "-" for stdout)
+      --output-file=PATH
+                        output file name (default: - (i.e., stdout))
+
       -p, --pins-per-row=N
                         number of pins per row
       -P, --total-pin-count=N
@@ -346,28 +348,43 @@ Generate footprints for arthropodic components
           ba            first row is numbered B1..Bn, second row A1..An
 
       --style=thickened|dent|boxed|socket|wsl-arrow|wsl-dent|psl
-                        use this style to indicate pin 1 on the silk layer
+                        how pin 1 is indicated on the silk layer
 
-      --pin-distance=DISTANCE
-                        distance between the pins
-      --row-distance=DISTANCE
-                        distance between the rows
+      --pin-distance=LENGTH
+      --row-distance=LENGTH
       --outer-pad-length=LENGTH
-                        length of the solder pads on the outside
       --inner-pad-length=LENGTH
-                        length of the solder pads on the inside
-
-      --line-thickness=Xmm|Xmil
-      --pin-thickness=Xmm|Xmil
-      --pin-clearance=Xmm|Xmil
-      --pin-mask=Xmm|Xmil
-      --pin-drill=Xmm|Xmil
-      --pad-thickness=Xmm|Xmil
-      --pad-clearance=Xmm|Xmil
-      --pad-mask=Xmm|Xmil
+      --line-thickness=LENGTH
+      --pin-thickness=LENGTH
+      --pin-clearance=LENGTH
+      --pin-mask=LENGTH
+      --pin-drill=LENGTH
+      --pad-thickness=LENGTH
+      --pad-clearance=LENGTH
+      --pad-mask=LENGTH
+            Length parameters for footprint geometry.  Must be be specified
+            either in millimeters (e.g., `2.54mm') or mils (`100mil').
 
       --help            give this help
       --version         display version number
+
+Mandatory arguments to long options are mandatory for short options too.
+
+All options except --variety=, --help, and --version can be used in the
+configuration file.  A configuration file could look like this:
+
+  output-file = $(name).fp
+  ; ... more global options ...
+
+  [variety "DIP"]
+          name = DIP$(total-pin-count)
+          row-count = 2
+          row-distance = 300mil
+          numbering-scheme = u-shaped
+          style = dent
+
+The only indentation allowed for variety sections is a single tab character.
+Empty lines and lines starting with `;' are ignored.
 """ % sys.argv[0])
             sys.exit(0)
         elif option == '--version':
