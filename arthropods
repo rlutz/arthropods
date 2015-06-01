@@ -256,62 +256,58 @@ def main():
         elif option == '--pad-mask':
             pad_mask = parse(value)
         elif option == '--help':
-            sys.stdout.write("Usage: %s NAME PIN_COUNT\n" % sys.argv[0])
-            sys.stdout.write("Generate footprints for arthropodic components\n")
-            sys.stdout.write("\n")
-            sys.stdout.write(
-"      -s, --style=thickened|dent|boxed|socket|wsl-arrow|wsl-dent|psl\n"
-"                        use this style to indicate pin 1 on the silk layer\n")
-            sys.stdout.write("\n")
-            sys.stdout.write(
-"      --straight        one straight row of pins\n"
-"      -Z, --zigzag      two rows of pins, numbered in zig-zag\n"
-"      -U, --u-shaped    two rows of pins, numbered in an U shape\n"
-"      -A, --ab          two rows of pins, numbered A1..An and B1..Bn\n"
-"      -B, --ba          two rows of pins, numbered B1..Bn and A1..An\n")
-            sys.stdout.write("\n")
-            sys.stdout.write(
-"      -d, --row-distance=DISTANCE\t[default: %s]\n"
-"                        distance between the rows\n"
-"      -p, --pad-length=LENGTH\t\t[default: %s]\n"
-"                        length of the solder pads\n"
-                % (user_format(row_distance), user_format(pad_length)))
-            sys.stdout.write("\n")
-            sys.stdout.write(
-"      --line-thickness=Xmm|Xmil\t[default: %s]\n"
-"      --pin-thickness=Xmm|Xmil\t[default: %s]\n"
-"      --pin-clearance=Xmm|Xmil\t[default: %s]\n"
-"      --pin-mask=Xmm|Xmil\t[default: %s]\n"
-"      --pin-drill=Xmm|Xmil\t[default: %s]\n"
-"      --pad-thickness=Xmm|Xmil\t[default: %s]\n"
-"      --pad-clearance=Xmm|Xmil\t[default: %s]\n"
-"      --pad-mask=Xmm|Xmil\t[default: %s]\n"
-                % (user_format(line_thickness),
-                   user_format(pin_thickness), user_format(pin_clearance),
-                     user_format(pin_mask), user_format(pin_drill),
-                   user_format(pad_thickness), user_format(pad_clearance),
-                     user_format(pad_mask)))
-            sys.stdout.write("\n")
-            sys.stdout.write(
-"      --help            give this help\n"
-"      --version         display version number\n")
+            sys.stdout.write("""\
+Usage: %s NAME PIN_COUNT
+Generate footprints for arthropodic components
+
+      -s, --style=thickened|dent|boxed|socket|wsl-arrow|wsl-dent|psl
+                        use this style to indicate pin 1 on the silk layer
+
+      --straight        one straight row of pins
+      -Z, --zigzag      two rows of pins, numbered in zig-zag
+      -U, --u-shaped    two rows of pins, numbered in an U shape
+      -A, --ab          two rows of pins, numbered A1..An and B1..Bn
+      -B, --ba          two rows of pins, numbered B1..Bn and A1..An
+
+      -d, --row-distance=DISTANCE	[default: %s]
+                        distance between the rows
+      -p, --pad-length=LENGTH		[default: %s]
+                        length of the solder pads
+
+      --line-thickness=Xmm|Xmil	[default: %s]
+      --pin-thickness=Xmm|Xmil	[default: %s]
+      --pin-clearance=Xmm|Xmil	[default: %s]
+      --pin-mask=Xmm|Xmil	[default: %s]
+      --pin-drill=Xmm|Xmil	[default: %s]
+      --pad-thickness=Xmm|Xmil	[default: %s]
+      --pad-clearance=Xmm|Xmil	[default: %s]
+      --pad-mask=Xmm|Xmil	[default: %s]
+
+      --help            give this help
+      --version         display version number
+""" % (sys.argv[0],
+       user_format(row_distance), user_format(pad_length),
+       user_format(line_thickness),
+       user_format(pin_thickness), user_format(pin_clearance),
+         user_format(pin_mask), user_format(pin_drill),
+       user_format(pad_thickness), user_format(pad_clearance),
+         user_format(pad_mask)))
             sys.exit(0)
         elif option == '--version':
-            sys.stdout.write(
-"Arthropods - footprint generator for arthropodic components\n")
-            sys.stdout.write("Copyright (C) 2015 Roland Lutz\n")
-            sys.stdout.write("\n")
-            sys.stdout.write(
-"This program is free software; you can redistribute it and/or\n"
-"modify it under the terms of the GNU General Public License\n"
-"as published by the Free Software Foundation; either version 2\n"
-"of the License, or (at your option) any later version.\n")
-            sys.stdout.write("\n")
-            sys.stdout.write(
-"This program is distributed in the hope that it will be useful,\n"
-"but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
-"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n"
-"GNU General Public License for more details.\n")
+            sys.stdout.write("""\
+Arthropods - footprint generator for arthropodic components
+Copyright (C) 2015 Roland Lutz
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+""")
             sys.exit(0)
         else:
             raise AssertionError
