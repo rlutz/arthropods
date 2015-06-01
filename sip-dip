@@ -1,0 +1,33 @@
+pad-length = 50mil
+
+line-thickness = 10mil
+
+pin-thickness = 1.5mm
+pin-clearance = 1.4mm
+pin-mask = 1.7mm
+pin-drill = 1mm
+
+pad-thickness = 1.492mm
+pad-clearance = 1.4mm
+pad-mask = 1.69mm
+
+output-file = footprints/$(name).fp
+
+[variety "SIP"]
+	name = SIP$(total-pin-count)
+	row-count = 1
+	style = thickened
+
+[variety "DIP"]
+	name = DIP$(total-pin-count)
+	row-count = 2
+	row-distance = 300mil
+	numbering-scheme = u-shaped
+	style = dent
+
+[variety "DIP_wide"]
+	name = DIP$(total-pin-count)_wide
+	row-count = 2
+	row-distance = 600mil
+	numbering-scheme = u-shaped
+	style = dent
