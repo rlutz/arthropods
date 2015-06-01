@@ -568,9 +568,10 @@ GNU General Public License for more details.
 
             pin(j * row_distance, y, name, flags = maybe_square)
 
-            pad(j * row_distance - left_pad_length, y,
-                j * row_distance + right_pad_length, y,
-                name, flags = ['onsolder'] + maybe_edge2 + maybe_square)
+            if left_pad_length != zero or right_pad_length != zero:
+                pad(j * row_distance - left_pad_length, y,
+                    j * row_distance + right_pad_length, y,
+                    name, flags = ['onsolder'] + maybe_edge2 + maybe_square)
 
     # Paint outline
 
