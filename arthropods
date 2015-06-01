@@ -16,7 +16,7 @@
 # along with this program; if not, write to the Free Software Foundation,
 # Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-import getopt, sys
+import getopt, math, sys
 
 ZERO, MM, MIL = xrange(3)
 class Nanometers:
@@ -520,13 +520,6 @@ GNU General Public License for more details.
         text_x, text_y, text_dir, text_scale = \
           x0, y0 - mil(70.), 0, 100
 
-    if style == STYLE_PSL:
-        if row_count != 2:
-            invalid_arguments("This style only works with two pin rows")
-        if row_distance != mil(100.):
-            invalid_arguments(
-                "This style does not work with a custom row distance")
-
     start(None, opt['name'], opt['name'], opt['name'], zero, zero,
           text_x, text_y, text_dir, text_scale, None)
 
@@ -629,72 +622,93 @@ GNU General Public License for more details.
         line(x0 + mil(50.), height / 2 + mil(100.),
              x0, height / 2 + mil(100.))
     elif style == STYLE_PSL:
+        ratio = float((width / 2 + mil(55.12)).v) / float(mil(125.).v)
+        if ratio < 1.:
+            angle = int(round(math.acos(ratio) / math.pi * 180.))
+        else:
+            angle = 0
+
         # bottom part
-        custom_pin(mil(50.), height + mil(231.10),
+        custom_pin(width / 2, height + mil(231.10),
                    mil(147.80), mil(121.37), mil(151.74), mil(118.11), 0)
-        line(mil(299.21), height + mil(427.75),
-             mil(929.13), height + mil(683.66))
-        line(mil(653.54), height + mil(408.07),
-             mil(968.50), height + mil(604.92))
-        line(mil(653.54), height + mil(152.16),
-             mil(456.69), height + mil(152.16))
-        line(mil(653.54), height + mil(408.07),
-             mil(653.54), height + mil(152.16))
-        line(mil(220.47), height + mil(427.76),
-             mil(653.54), height + mil(408.07))
-        line(mil(870.079), height + mil(486.80),
-             mil(850.40), height + mil(526.17))
-        line(mil(889.77), height + mil(427.75),
-             mil(870.079), height + mil(486.80))
-        line(mil(988.189), height + mil(506.49),
-             mil(889.77), height + mil(427.75))
-        line(mil(50.), height + mil(216.10),
-             mil(50.), height + mil(246.10))
-        line(mil(35.), height + mil(231.10),
-             mil(65.), height + mil(231.10))
-        line(mil(988.189), height + mil(624.60),
-             mil(988.189), height + mil(506.49))
-        line(mil(988.189), height + mil(624.60),
-             mil(968.50), height + mil(604.92))
-        arc(mil(50.), height + mil(231.10),
-            mil(125.), mil(125.), 35, 290)
-        arc(mil(929.13), height + mil(624.60),
+        line(width + mil(199.21), height + mil(427.75),
+             width + mil(829.13), height + mil(683.66))
+        line(width + mil(553.54), height + mil(408.07),
+             width + mil(868.50), height + mil(604.92))
+        line(width + mil(553.54), height + mil(152.16),
+             width + mil(356.69), height + mil(152.16))
+        line(width + mil(553.54), height + mil(408.07),
+             width + mil(553.54), height + mil(152.16))
+        line(width + mil(120.47), height + mil(427.76),
+             width + mil(553.54), height + mil(408.07))
+        line(width + mil(770.079), height + mil(486.80),
+             width + mil(750.40), height + mil(526.17))
+        line(width + mil(789.77), height + mil(427.75),
+             width + mil(770.079), height + mil(486.80))
+        line(width + mil(888.189), height + mil(506.49),
+             width + mil(789.77), height + mil(427.75))
+        line(width / 2, height + mil(216.10),
+             width / 2, height + mil(246.10))
+        line(width / 2 - mil(15.), height + mil(231.10),
+             width / 2 + mil(15.), height + mil(231.10))
+        line(width + mil(888.189), height + mil(624.60),
+             width + mil(888.189), height + mil(506.49))
+        line(width + mil(888.189), height + mil(624.60),
+             width + mil(868.50), height + mil(604.92))
+        arc(width / 2, height + mil(231.10),
+            mil(125.), mil(125.), angle, 360. - angle * 2.)
+        arc(width + mil(829.13), height + mil(624.60),
             mil(59.06), mil(59.06), 90, 90)
 
+        # width / 2 + mil(55.12)
+
         # top part
-        custom_pin(mil(50.), mil(-231.10),
+        custom_pin(width / 2, mil(-231.10),
                    mil(147.80), mil(123.37), mil(151.74), mil(118.11), 0)
-        line(mil(299.21), mil(-427.75), mil(929.13), mil(-683.66))
-        line(mil(653.54), mil(-408.07), mil(968.50), mil(-604.92))
-        line(mil(653.54), mil(-152.16), mil(456.69), mil(-152.16))
-        line(mil(653.54), mil(-408.07), mil(653.54), mil(-152.16))
-        line(mil(220.47), mil(-427.76), mil(653.54), mil(-408.07))
-        line(mil(870.079), mil(-486.80), mil(850.40), mil(-526.17))
-        line(mil(889.77), mil(-427.75), mil(870.079), mil(-486.80))
-        line(mil(988.189), mil(-506.49), mil(889.77), mil(-427.75))
-        line(mil(50.), mil(-216.10), mil(50.), mil(-246.10))
-        line(mil(35.), mil(-231.10), mil(65.), mil(-231.10))
-        line(mil(988.189), mil(-624.60), mil(988.189), mil(-506.49))
-        line(mil(988.189), mil(-624.60), mil(968.50), mil(-604.92))
-        arc(mil(50.), mil(-231.10), mil(125.), mil(125.), 35, 290)
-        arc(mil(929.13), mil(-624.60), mil(59.06), mil(59.06), 180, 90)
+        line(width + mil(199.21), mil(-427.75),
+             width + mil(829.13), mil(-683.66))
+        line(width + mil(553.54), mil(-408.07),
+             width + mil(868.50), mil(-604.92))
+        line(width + mil(553.54), mil(-152.16),
+             width + mil(356.69), mil(-152.16))
+        line(width + mil(553.54), mil(-408.07),
+             width + mil(553.54), mil(-152.16))
+        line(width + mil(120.47), mil(-427.76),
+             width + mil(553.54), mil(-408.07))
+        line(width + mil(770.079), mil(-486.80),
+             width + mil(750.40), mil(-526.17))
+        line(width + mil(789.77), mil(-427.75),
+             width + mil(770.079), mil(-486.80))
+        line(width + mil(888.189), mil(-506.49),
+             width + mil(789.77), mil(-427.75))
+        line(width / 2, mil(-216.10), width / 2, mil(-246.10))
+        line(width / 2 - mil(15.), mil(-231.10),
+             width / 2 + mil(15.), mil(-231.10))
+        line(width + mil(888.189), mil(-624.60),
+             width + mil(888.189), mil(-506.49))
+        line(width + mil(888.189), mil(-624.60),
+             width + mil(868.50), mil(-604.92))
+        arc(width / 2, mil(-231.10),
+            mil(125.), mil(125.), angle, 360 - angle * 2)
+        arc(width + mil(829.13), mil(-624.60), mil(59.06), mil(59.06), 180, 90)
 
         # box
         line(mil(-55.12), height + mil(428.15),
-             mil(259.84), height + mil(428.15))
+             width + mil(159.84), height + mil(428.15))
         line(mil(-55.12), mil(-427.76), mil(-55.12), height + mil(428.15))
-        line(mil(456.69), height + mil(418.32), mil(456.69), mil(-417.91))
-        line(mil(220.47), mil(-427.76), mil(-55.12), mil(-427.76))
+        line(width + mil(356.69), height + mil(418.32),
+             width + mil(356.69), mil(-417.91))
+        line(width + mil(120.47), mil(-427.76), mil(-55.12), mil(-427.76))
 
         # mark on the left
         line(mil(-75.), mil(0.), mil(-125.), mil(-50.))
         line(mil(-125.), mil(50.), mil(-75.), mil(0.))
 
         # mark in the middle
-        line(mil(50.), height / 2 - mil(50.), mil(50.), height / 2)
-        line(mil(50.), height / 2, mil(100.), height / 2)
-        line(mil(50.), height / 2 + mil(50.), mil(50.), height / 2)
-        line(mil(50.), height / 2, mil(0.), height / 2)
+        line(width / 2, height / 2 - mil(50.), width / 2, height / 2)
+        line(width / 2, height / 2, width / 2 + mil(50.), height / 2)
+        line(width / 2, height / 2 + mil(50.), width / 2, height / 2)
+        line(width / 2, height / 2, width / 2 - mil(50.), height / 2)
     else:
         raise ValueError
 
