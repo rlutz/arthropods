@@ -1,6 +1,7 @@
 row-count = 2
 row-distance = 100mil
 
+pin-distance = 100mil
 pad-length = 50mil
 
 line-thickness = 10mil

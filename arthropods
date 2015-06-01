@@ -45,9 +45,9 @@ class Nanometers:
             ZERO if self.unit == ZERO and other.unit == ZERO else
             MIL if self.unit != MM and other.unit != MM else MM)
     def __mul__(self, other):
-        return Nanometers(self.v * other, self.unit)
+        return Nanometers(int(self.v * other), self.unit)
     def __div__(self, other):
-        return Nanometers(self.v / other, self.unit)
+        return Nanometers(int(self.v / other), self.unit)
     __rmul__ = __mul__
     __rdiv__ = __div__
     def __neg__(self):
@@ -209,7 +209,8 @@ def set_option(opt, name, value):
             }[value]
         except KeyError:
             raise OptionError, "`%s' is not a valid silk style" % value
-    elif name in ['row-distance',
+    elif name in ['pin-distance',
+                  'row-distance',
                   'pad-length',
                   'line-thickness',
                   'pin-thickness',
@@ -299,7 +300,7 @@ def main():
                 'variety=',
                 'name=', 'output-file=', 'pins-per-row=', 'total-pin-count=',
                 'row-count=', 'numbering-scheme=', 'style=',
-                'row-distance=', 'pad-length=',
+                'pin-distance=', 'row-distance=', 'pad-length=',
                 'line-thickness=',
                 'pin-thickness=',
                 'pin-clearance=',
@@ -343,6 +344,8 @@ Generate footprints for arthropodic components
       --style=thickened|dent|boxed|socket|wsl-arrow|wsl-dent|psl
                         use this style to indicate pin 1 on the silk layer
 
+      --pin-distance=DISTANCE
+                        distance between the pins
       --row-distance=DISTANCE
                         distance between the rows
       --pad-length=LENGTH
@@ -414,8 +417,8 @@ GNU General Public License for more details.
             if name not in opt:
                 opt[name] = merge_opts[name]
 
-    for name in ['name', 'output-file',
-                 'row-count', 'style', 'pad-length', 'line-thickness',
+    for name in ['name', 'output-file', 'row-count', 'style',
+                 'pin-distance', 'pad-length', 'line-thickness',
                  'pin-thickness', 'pin-clearance', 'pin-mask', 'pin-drill',
                  'pad-thickness', 'pad-clearance', 'pad-mask']:
         if name not in opt:
@@ -473,6 +476,7 @@ GNU General Public License for more details.
     pin_count = opt['total-pin-count']
     eff_pin_count = opt['pins-per-row']
     style = opt['style']
+    pin_distance = opt['pin-distance']
     pad_length = opt['pad-length']
     row_count = opt['row-count']
     if row_count == 1:
@@ -485,7 +489,7 @@ GNU General Public License for more details.
     # Calculate dimensions
 
     width = row_distance
-    height = (eff_pin_count - 1) * mil(100.)
+    height = (eff_pin_count - 1) * pin_distance
 
     if style in [STYLE_WSL_ARROW, STYLE_WSL_DENT]:
         x_offset = mil(125.)
@@ -521,7 +525,7 @@ GNU General Public License for more details.
           text_x, text_y, text_dir, text_scale, None)
 
     for i in xrange(0, eff_pin_count):
-        y = i * mil(100.)
+        y = i * pin_distance
         if i == 0:
             if numbering_scheme == SHAPE_BA:
                 maybe_square = []
@@ -583,24 +587,24 @@ GNU General Public License for more details.
             line(mil(-50.), mil(50.), mil(50.), mil(50.))
         line(mil(50.), mil(-50.), mil(50.), mil(50.))
     elif style == STYLE_SOCKET:
-        line(mil(-30.), mil(-50.), mil(130.), mil(-50.))
+        line(mil(-30.), -.5 * pin_distance, mil(130.), -.5 * pin_distance)
         for i in xrange(0, eff_pin_count):
-            line(mil(-30.), i * mil(100.) - mil(50.),
-                 mil(-50.), i * mil(100.) - mil(30.))
-            line(mil(-50.), i * mil(100.) - mil(30.),
-                 mil(-50.), i * mil(100.) + mil(30.))
-            line(mil(-50.), i * mil(100.) + mil(30.),
-                 mil(-30.), i * mil(100.) + mil(50.))
+            line(mil(-30.), (i - .5) * pin_distance,
+                 mil(-50.), (i - .3) * pin_distance)
+            line(mil(-50.), (i - .3) * pin_distance,
+                 mil(-50.), (i + .3) * pin_distance)
+            line(mil(-50.), (i + .3) * pin_distance,
+                 mil(-30.), (i + .5) * pin_distance)
 
-            line(mil(130.), i * mil(100.) - mil(50.),
-                 mil(150.), i * mil(100.) - mil(30.))
-            line(mil(150.), i * mil(100.) - mil(30.),
-                 mil(150.), i * mil(100.) + mil(30.))
-            line(mil(150.), i * mil(100.) + mil(30.),
-                 mil(130.), i * mil(100.) + mil(50.))
+            line(mil(130.), (i - .5) * pin_distance,
+                 mil(150.), (i - .3) * pin_distance)
+            line(mil(150.), (i - .3) * pin_distance,
+                 mil(150.), (i + .3) * pin_distance)
+            line(mil(150.), (i + .3) * pin_distance,
+                 mil(130.), (i + .5) * pin_distance)
 
-        line(mil(-30.), eff_pin_count * mil(100.) - mil(50.),
-             mil(130.), eff_pin_count * mil(100.) - mil(50.))
+        line(mil(-30.), (eff_pin_count - .5) * pin_distance,
+             mil(130.), (eff_pin_count - .5) * pin_distance)
     elif style == STYLE_WSL_ARROW:
         # arrow
         line(x0, y0, x1, y0)
