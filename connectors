@@ -22,6 +22,11 @@ output-file = footprints/$(name).fp
 	row-count = 1
 	style = thickened
 
+[variety "1xXPINsocket"]
+	name = 1x$(pins-per-row)PINsocket
+	row-count = 1
+	style = socket
+
 [variety "2xXPIN"]
 	name = 2x$(pins-per-row)PIN
 	numbering-scheme = zigzag

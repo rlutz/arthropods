@@ -514,7 +514,7 @@ GNU General Public License for more details.
         text_x, text_y, text_dir, text_scale = \
           x0, y0 - mil(70.), 0, 100
 
-    if style in [STYLE_SOCKET, STYLE_PSL]:
+    if style == STYLE_PSL:
         if row_count != 2:
             invalid_arguments("This style only works with two pin rows")
         if row_distance != mil(100.):
@@ -587,7 +587,8 @@ GNU General Public License for more details.
             line(mil(-50.), mil(50.), mil(50.), mil(50.))
         line(mil(50.), mil(-50.), mil(50.), mil(50.))
     elif style == STYLE_SOCKET:
-        line(mil(-30.), -.5 * pin_distance, mil(130.), -.5 * pin_distance)
+        line(mil(-30.), -.5 * pin_distance,
+             width + mil(30.), -.5 * pin_distance)
         for i in xrange(0, eff_pin_count):
             line(mil(-30.), (i - .5) * pin_distance,
                  mil(-50.), (i - .3) * pin_distance)
@@ -596,15 +597,15 @@ GNU General Public License for more details.
             line(mil(-50.), (i + .3) * pin_distance,
                  mil(-30.), (i + .5) * pin_distance)
 
-            line(mil(130.), (i - .5) * pin_distance,
-                 mil(150.), (i - .3) * pin_distance)
-            line(mil(150.), (i - .3) * pin_distance,
-                 mil(150.), (i + .3) * pin_distance)
-            line(mil(150.), (i + .3) * pin_distance,
-                 mil(130.), (i + .5) * pin_distance)
+            line(width + mil(30.), (i - .5) * pin_distance,
+                 width + mil(50.), (i - .3) * pin_distance)
+            line(width + mil(50.), (i - .3) * pin_distance,
+                 width + mil(50.), (i + .3) * pin_distance)
+            line(width + mil(50.), (i + .3) * pin_distance,
+                 width + mil(30.), (i + .5) * pin_distance)
 
         line(mil(-30.), (eff_pin_count - .5) * pin_distance,
-             mil(130.), (eff_pin_count - .5) * pin_distance)
+             width + mil(30.), (eff_pin_count - .5) * pin_distance)
     elif style == STYLE_WSL_ARROW:
         # arrow
         line(x0, y0, x1, y0)
