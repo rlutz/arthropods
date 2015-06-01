@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 for pin_count in 6 16
 do	./arthropods -v SIP -P ${pin_count} sip-dip
