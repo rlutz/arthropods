@@ -590,12 +590,14 @@ GNU General Public License for more details.
     if style == STYLE_CORNER:
         # diagonal line
         line(x0, y0, x1, y0)
-        line(x0 + mil(15.), y0, x0, y0 + mil(15.))
+        if row_count != 1 or eff_pin_count != 1:
+            line(x0 + mil(15.), y0, x0, y0 + mil(15.))
     elif style == STYLE_THICKENED:
         # thick line
         line(x0, y0, x1, y0)
-        line(x0, y0 + mil(5.), x1, y0 + mil(5.))
-        line(x0, y0 + mil(10.), x1, y0 + mil(10.))
+        if row_count != 1 or eff_pin_count != 1:
+            line(x0, y0 + mil(5.), x1, y0 + mil(5.))
+            line(x0, y0 + mil(10.), x1, y0 + mil(10.))
     elif style == STYLE_DENT:
         # dent
         line(x0, y0, width / 2 - mil(50.), y0)
