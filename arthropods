@@ -476,10 +476,10 @@ GNU General Public License for more details.
     pad_length = opt['pad-length']
     row_count = opt['row-count']
     if row_count == 1:
-        shape = None
+        numbering_scheme = None
         row_distance = zero
     else:
-        shape = opt['numbering-scheme']
+        numbering_scheme = opt['numbering-scheme']
         row_distance = opt['row-distance']
 
     # Calculate dimensions
@@ -523,7 +523,7 @@ GNU General Public License for more details.
     for i in xrange(0, eff_pin_count):
         y = i * mil(100.)
         if i == 0:
-            if shape == SHAPE_BA:
+            if numbering_scheme == SHAPE_BA:
                 maybe_square = []
                 other_maybe_square = ['square']
             else:
@@ -533,13 +533,13 @@ GNU General Public License for more details.
             maybe_square = []
             other_maybe_square = []
 
-        if shape == SHAPE_ZIGZAG:
+        if numbering_scheme == SHAPE_ZIGZAG:
             i0, i1 = i * 2 + 1, i * 2 + 2
-        if shape == SHAPE_USHAPED:
+        if numbering_scheme == SHAPE_USHAPED:
             i0, i1 = i + 1, pin_count - i
-        if shape == SHAPE_AB:
+        if numbering_scheme == SHAPE_AB:
             i0, i1 = 'A%d' % (i + 1), 'B%d' % (i + 1)
-        if shape == SHAPE_BA:
+        if numbering_scheme == SHAPE_BA:
             i0, i1 = 'B%d' % (i + 1), 'A%d' % (i + 1)
 
         if row_count == 1:
@@ -577,7 +577,7 @@ GNU General Public License for more details.
     elif style == STYLE_BOXED:
         # box around pin 1
         line(x0, y0, x1, y0)
-        if shape == SHAPE_BA:
+        if numbering_scheme == SHAPE_BA:
             line(mil(150.), mil(50.), mil(50.), mil(50.))
         else:
             line(mil(-50.), mil(50.), mil(50.), mil(50.))
