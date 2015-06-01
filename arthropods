@@ -335,7 +335,7 @@ Generate footprints for arthropodic components
                         number of pins per row
       -P, --total-pin-count=N
                         total number of pins in the footprint
-      --row-count=1|2   number of rows of pins
+      --row-count=N     number of rows of pins
       --numbering-scheme=zigzag|u-shaped|ab|ba
                         pin numbering scheme (only relevant for >1 rows)
           zigzag        first row is numbered 1,3..N-1, second row 2,4..N
@@ -428,15 +428,13 @@ GNU General Public License for more details.
     if 'pins-per-row' not in opt and 'total-pin-count' not in opt:
         invalid_arguments("Missing `pins-per-row' or `total-pin-count' option")
 
-    if opt['row-count'] == 2:
+    if opt['row-count'] != 1:
         if 'numbering-scheme' not in opt:
             invalid_arguments("Numbering scheme must be specified "
-                              "for 2-row footprint")
+                              "for multi-row footprint")
         if 'row-distance' not in opt:
             invalid_arguments("Row distance must be specified "
-                              "for 2-row footprint")
-    elif opt['row-count'] != 1:
-        invalid_arguments("Row count must be 1 or 2")
+                              "for multi-row footprint")
 
     if opt['pins-per-row'] is None:
         if opt['total-pin-count'] % opt['row-count'] != 0:
@@ -482,7 +480,7 @@ GNU General Public License for more details.
     pad_length = opt['pad-length']
     row_count = opt['row-count']
     if row_count == 1:
-        numbering_scheme = None
+        numbering_scheme = SHAPE_ZIGZAG
         row_distance = zero
     else:
         numbering_scheme = opt['numbering-scheme']
@@ -490,7 +488,7 @@ GNU General Public License for more details.
 
     # Calculate dimensions
 
-    width = row_distance
+    width = (row_count - 1) * row_distance
     height = (eff_pin_count - 1) * pin_distance
 
     if style in [STYLE_WSL_ARROW, STYLE_WSL_DENT]:
@@ -528,44 +526,43 @@ GNU General Public License for more details.
 
     for i in xrange(0, eff_pin_count):
         y = i * pin_distance
-        if i == 0:
-            if numbering_scheme == SHAPE_BA:
-                maybe_square = []
-                other_maybe_square = ['square']
-            else:
+        for j in xrange(0, row_count):
+            if numbering_scheme == SHAPE_ZIGZAG:
+                name = i * row_count + j + 1
+            elif numbering_scheme == SHAPE_USHAPED:
+                if j % 2 == 0:
+                    name = j * eff_pin_count + i + 1
+                else:
+                    name = (j + 1) * eff_pin_count - i
+            elif numbering_scheme == SHAPE_AB:
+                name = '%c%d' % (ord('A') + j, i + 1)
+            elif numbering_scheme == SHAPE_BA:
+                name = '%c%d' % (ord('A') + row_count - j - 1, i + 1)
+
+            if i == 0 and (
+                    numbering_scheme != SHAPE_BA and j == 0 or
+                    numbering_scheme == SHAPE_BA and j == row_count - 1):
                 maybe_square = ['square']
-                other_maybe_square = []
-        else:
-            maybe_square = []
-            other_maybe_square = []
+            else:
+                maybe_square = []
 
-        if numbering_scheme == SHAPE_ZIGZAG:
-            i0, i1 = i * 2 + 1, i * 2 + 2
-        if numbering_scheme == SHAPE_USHAPED:
-            i0, i1 = i + 1, pin_count - i
-        if numbering_scheme == SHAPE_AB:
-            i0, i1 = 'A%d' % (i + 1), 'B%d' % (i + 1)
-        if numbering_scheme == SHAPE_BA:
-            i0, i1 = 'B%d' % (i + 1), 'A%d' % (i + 1)
+            offset = zero
+            if row_distance < mil(100.) + pad_length:
+                if j == 0:
+                    offset -= pad_length / 2
+                if j == row_count - 1:
+                    offset += pad_length / 2
 
-        if row_count == 1:
-            pin(zero, y, i + 1, flags = maybe_square)
-            pad(-pad_length / 2, y, pad_length / 2, y,
-                i + 1, flags = ['onsolder'] + maybe_square)
-        elif row_distance < mil(100.) + pad_length:
-            pin(zero, y, i0, flags = maybe_square)
-            pin(width, y, i1, flags = other_maybe_square)
-            pad(-pad_length, y, zero, y,
-                i0, flags = ['onsolder'] + maybe_square)
-            pad(width, y, width + pad_length, y,
-                i1, flags = ['onsolder', 'edge2'] + other_maybe_square)
-        else:
-            pin(zero, y, i0, flags = maybe_square)
-            pad(-pad_length / 2, y, pad_length / 2, y,
-                i0, flags = ['onsolder'] + maybe_square)
-            pin(width, y, i1, flags = other_maybe_square)
-            pad(width - pad_length / 2, y, width + pad_length / 2, y,
-                i1, flags = ['onsolder', 'edge2'] + other_maybe_square)
+            if j != 0:
+                maybe_edge2 = ['edge2']
+            else:
+                maybe_edge2 = []
+
+            pin(j * row_distance, y, name, flags = maybe_square)
+
+            pad(j * row_distance + offset - pad_length / 2, y,
+                j * row_distance + offset + pad_length / 2, y,
+                name, flags = ['onsolder'] + maybe_edge2 + maybe_square)
 
     # Paint outline
 
