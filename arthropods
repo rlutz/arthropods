@@ -57,8 +57,8 @@ def mm(v): return Nanometers(int(v * 1000000), MM)
 def mil(v): return Nanometers(int(v * 25400), MIL)
 zero = Nanometers(0, ZERO)
 
-STYLE_THICKENED, STYLE_DENT, STYLE_BOXED, STYLE_SOCKET, \
-    STYLE_WSL_ARROW, STYLE_WSL_DENT, STYLE_PSL = xrange(7)
+STYLE_CORNER, STYLE_THICKENED, STYLE_DENT, STYLE_BOXED, STYLE_SOCKET, \
+    STYLE_WSL_ARROW, STYLE_WSL_DENT, STYLE_PSL = xrange(8)
 SHAPE_ZIGZAG, SHAPE_USHAPED, SHAPE_AB, SHAPE_BA = xrange(4)
 
 opt_defaults = {
@@ -201,6 +201,7 @@ def set_option(opt, name, value):
     elif name == 'style':
         try:
             value = {
+                'corner': STYLE_CORNER,
                 'thickened': STYLE_THICKENED,
                 'dent': STYLE_DENT,
                 'boxed': STYLE_BOXED,
@@ -347,7 +348,7 @@ Generate footprints for arthropodic components
           ab            first row is numbered A1..An, second row B1..Bn
           ba            first row is numbered B1..Bn, second row A1..An
 
-      --style=thickened|dent|boxed|socket|wsl-arrow|wsl-dent|psl
+      --style=corner|thickened|dent|boxed|socket|wsl-arrow|wsl-dent|psl
                         how pin 1 is indicated on the silk layer
 
       --pin-distance=LENGTH
@@ -586,7 +587,11 @@ GNU General Public License for more details.
 
     # Paint outline
 
-    if style == STYLE_THICKENED:
+    if style == STYLE_CORNER:
+        # diagonal line
+        line(x0, y0, x1, y0)
+        line(x0 + mil(15.), y0, x0, y0 + mil(15.))
+    elif style == STYLE_THICKENED:
         # thick line
         line(x0, y0, x1, y0)
         line(x0, y0 + mil(5.), x1, y0 + mil(5.))
