@@ -448,7 +448,7 @@ GNU General Public License for more details.
     else:
         opt['total-pin-count'] = opt['pins-per-row'] * opt['row-count']
 
-    for name in opt:
+    for name in sorted(opt):
         value = opt[name]
         if not isinstance(value, basestring):
             continue
