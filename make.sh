@@ -22,4 +22,9 @@ done
 for pin_count in 2 6
 do	./arthropods -v JMP_Xx2PIN -p ${pin_count} jumpers
 	./arthropods -v JMP_Xx3PIN -p ${pin_count} jumpers
+	./arthropods -v "JAE right-angle" -p ${pin_count} jae-ps
+	./arthropods -v "JAE straight" -p ${pin_count} jae-ps
+	./arthropods -v "PS right-angle" -p ${pin_count} jae-ps
+	./arthropods -v "PS straight" -p ${pin_count} jae-ps
+	./arthropods -v "JAE/PS straight" -p ${pin_count} jae-ps
 done

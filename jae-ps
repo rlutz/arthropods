@@ -1,0 +1,38 @@
+row-count = 1
+row-distance = 100mil
+pin-distance = 100mil
+outer-pad-length = 0mil
+inner-pad-length = 0mil
+
+line-thickness = 10mil
+
+pin-thickness = 81.00mil
+pin-clearance = 39.37mil
+pin-mask = 84.94mil
+pin-drill = 46.00mil
+
+pad-thickness = 1.492mm
+pad-clearance = 1.4mm
+pad-mask = 1.69mm
+
+output-file = footprints/$(name).fp
+
+[variety "JAE right-angle"]
+	name = JAE_$(pins-per-row)PIN_LAY
+	style = jae-right-angle
+
+[variety "JAE straight"]
+	name = JAE_$(pins-per-row)PIN
+	style = jae-straight
+
+[variety "PS right-angle"]
+	name = PS_$(pins-per-row)PIN_LAY
+	style = ps-right-angle
+
+[variety "PS straight"]
+	name = PS_$(pins-per-row)PIN
+	style = ps-straight
+
+[variety "JAE/PS straight"]
+	name = JAE_or_PS_$(pins-per-row)PIN
+	style = jae-or-ps-straight

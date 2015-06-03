@@ -1,0 +1,21 @@
+Element["" "JAE_6PIN_LAY" "JAE_6PIN_LAY" "JAE_6PIN_LAY" 0.0000 0.0000 4.0320mm -1.3230mm 3 100 ""]
+(
+	Pin[0.0000 0.0000 81.00mil 39.37mil 84.94mil 46.00mil "1" "1" "square"]
+	Pin[0.0000 100.00mil 81.00mil 39.37mil 84.94mil 46.00mil "2" "2" ""]
+	Pin[0.0000 200.00mil 81.00mil 39.37mil 84.94mil 46.00mil "3" "3" ""]
+	Pin[0.0000 300.00mil 81.00mil 39.37mil 84.94mil 46.00mil "4" "4" ""]
+	Pin[0.0000 400.00mil 81.00mil 39.37mil 84.94mil 46.00mil "5" "5" ""]
+	Pin[0.0000 500.00mil 81.00mil 39.37mil 84.94mil 46.00mil "6" "6" ""]
+	ElementLine [-10.3000mm -1.4500mm 2.0000mm -1.4500mm 10.00mil]
+	ElementLine [2.0000mm -1.4500mm 2.0000mm 1.5500mm 10.00mil]
+	ElementLine [2.0000mm 1.5500mm 23.73mil 1.5500mm 10.00mil]
+	ElementLine [-0.1000mm 147.47mil -0.1000mm 152.53mil 10.00mil]
+	ElementLine [-0.1000mm 247.47mil -0.1000mm 252.53mil 10.00mil]
+	ElementLine [-0.1000mm 347.47mil -0.1000mm 352.53mil 10.00mil]
+	ElementLine [23.73mil 11.1500mm 2.0000mm 11.1500mm 10.00mil]
+	ElementLine [2.0000mm 11.1500mm 2.0000mm 14.1500mm 10.00mil]
+	ElementLine [2.0000mm 14.1500mm -10.3000mm 14.1500mm 10.00mil]
+	ElementLine [-10.3000mm 14.1500mm -10.3000mm -1.4500mm 10.00mil]
+	ElementLine [-7.4000mm -1.4500mm -7.4000mm 14.1500mm 10.00mil]
+
+	)

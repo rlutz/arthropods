@@ -1,0 +1,21 @@
+Element["" "PS_6PIN_LAY" "PS_6PIN_LAY" "PS_6PIN_LAY" 0.0000 0.0000 1.8000mm -3.4050mm 0 100 ""]
+(
+	Pin[0.0000 0.0000 81.00mil 39.37mil 84.94mil 46.00mil "1" "1" "square"]
+	Pin[0.0000 100.00mil 81.00mil 39.37mil 84.94mil 46.00mil "2" "2" ""]
+	Pin[0.0000 200.00mil 81.00mil 39.37mil 84.94mil 46.00mil "3" "3" ""]
+	Pin[0.0000 300.00mil 81.00mil 39.37mil 84.94mil 46.00mil "4" "4" ""]
+	Pin[0.0000 400.00mil 81.00mil 39.37mil 84.94mil 46.00mil "5" "5" ""]
+	Pin[0.0000 500.00mil 81.00mil 39.37mil 84.94mil 46.00mil "6" "6" ""]
+	ElementLine [1.8000mm -1.5000mm 21.2000mm -1.5000mm 10.00mil]
+	ElementLine [21.2000mm -1.5000mm 21.2000mm 14.2000mm 10.00mil]
+	ElementLine [21.2000mm 14.2000mm 1.8000mm 14.2000mm 10.00mil]
+	ElementLine [1.8000mm 14.2000mm 1.8000mm -1.5000mm 10.00mil]
+	ElementLine [5.1000mm -1.5000mm 5.1000mm 14.2000mm 10.00mil]
+	ElementLine [47.47mil 0.0000 1.8000mm 0.0000 10.00mil]
+	ElementLine [47.47mil 100.00mil 1.8000mm 100.00mil 10.00mil]
+	ElementLine [47.47mil 200.00mil 1.8000mm 200.00mil 10.00mil]
+	ElementLine [47.47mil 300.00mil 1.8000mm 300.00mil 10.00mil]
+	ElementLine [47.47mil 400.00mil 1.8000mm 400.00mil 10.00mil]
+	ElementLine [47.47mil 500.00mil 1.8000mm 500.00mil 10.00mil]
+
+	)
