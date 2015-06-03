@@ -588,25 +588,40 @@ GNU General Public License for more details.
     # Paint outline
 
     if style == STYLE_CORNER:
-        # diagonal line
+        # rectangle
         line(x0, y0, x1, y0)
+        line(x1, y0, x1, y1)
+        line(x1, y1, x0, y1)
+        line(x0, y1, x0, y0)
+        # diagonal line
         if row_count != 1 or eff_pin_count != 1:
             line(x0 + mil(15.), y0, x0, y0 + mil(15.))
     elif style == STYLE_THICKENED:
-        # thick line
+        # rectangle
         line(x0, y0, x1, y0)
+        line(x1, y0, x1, y1)
+        line(x1, y1, x0, y1)
+        line(x0, y1, x0, y0)
+        # thick line
         if row_count != 1 or eff_pin_count != 1:
             line(x0, y0 + mil(5.), x1, y0 + mil(5.))
             line(x0, y0 + mil(10.), x1, y0 + mil(10.))
     elif style == STYLE_DENT:
-        # dent
+        # rectangle with dent
         line(x0, y0, width / 2 - mil(50.), y0)
         arc(width / 2, y0, mil(50.), mil(50.), 0, 90)
         arc(width / 2, y0, mil(50.), mil(50.), 90, 90)
         line(width / 2 + mil(50.), y0, x1, y0)
+        line(x1, y0, x1, y1)
+        line(x1, y1, x0, y1)
+        line(x0, y1, x0, y0)
     elif style == STYLE_BOXED:
-        # box around pin 1
+        # rectangle
         line(x0, y0, x1, y0)
+        line(x1, y0, x1, y1)
+        line(x1, y1, x0, y1)
+        line(x0, y1, x0, y0)
+        # box around pin 1
         if numbering_scheme == SHAPE_BA:
             line(mil(150.), mil(50.), mil(50.), mil(50.))
         else:
@@ -633,13 +648,21 @@ GNU General Public License for more details.
         line(mil(-30.), (eff_pin_count - .5) * pin_distance,
              width + mil(30.), (eff_pin_count - .5) * pin_distance)
     elif style == STYLE_WSL_ARROW:
-        # arrow
+        # rectangle
         line(x0, y0, x1, y0)
+        line(x1, y0, x1, y1)
+        line(x1, y1, x0, y1)
+        line(x0, y1, x0, y0)
+        # arrow
         line(mil(-125.), mil(50.), mil(-75.), mil(0.))
         line(mil(-75.), mil(0.), mil(-125.), mil(-50.))
     elif style == STYLE_WSL_DENT:
-        # dent
+        # rectangle
         line(x0, y0, x1, y0)
+        line(x1, y0, x1, y1)
+        line(x1, y1, x0, y1)
+        line(x0, y1, x0, y0)
+        # dent
         line(x0, height / 2 - mil(100.),
              x0 + mil(50.), height / 2 - mil(100.))
         line(x0 + mil(50.), height / 2 - mil(100.),
@@ -736,11 +759,6 @@ GNU General Public License for more details.
         line(width / 2, height / 2, width / 2 - mil(50.), height / 2)
     else:
         raise ValueError
-
-    if style not in [STYLE_SOCKET, STYLE_PSL]:
-        line(x1, y0, x1, y1)
-        line(x1, y1, x0, y1)
-        line(x0, y1, x0, y0)
 
     end()
 

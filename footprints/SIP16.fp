@@ -33,10 +33,10 @@ Element["" "SIP16" "SIP16" "SIP16" 0.0000 0.0000 120.00mil -45.00mil 3 100 ""]
 	Pin[0.0000 1500.00mil 1.5000mm 1.4000mm 1.7000mm 1.0000mm "16" "16" ""]
 	Pad[-25.00mil 1500.00mil 25.00mil 1500.00mil 1.4920mm 1.4000mm 1.6900mm "16" "16" "onsolder,nopaste"]
 	ElementLine [-50.00mil -50.00mil 50.00mil -50.00mil 10.00mil]
-	ElementLine [-50.00mil -45.00mil 50.00mil -45.00mil 10.00mil]
-	ElementLine [-50.00mil -40.00mil 50.00mil -40.00mil 10.00mil]
 	ElementLine [50.00mil -50.00mil 50.00mil 1550.00mil 10.00mil]
 	ElementLine [50.00mil 1550.00mil -50.00mil 1550.00mil 10.00mil]
 	ElementLine [-50.00mil 1550.00mil -50.00mil -50.00mil 10.00mil]
+	ElementLine [-50.00mil -45.00mil 50.00mil -45.00mil 10.00mil]
+	ElementLine [-50.00mil -40.00mil 50.00mil -40.00mil 10.00mil]
 
 	)

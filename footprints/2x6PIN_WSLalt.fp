@@ -25,11 +25,11 @@ Element["" "2x6PIN_WSL" "2x6PIN_WSL" "2x6PIN_WSL" 0.0000 0.0000 -125.00mil -270.
 	Pin[100.00mil 500.00mil 1.5000mm 1.4000mm 1.7000mm 1.0000mm "12" "12" ""]
 	Pad[100.00mil 500.00mil 125.00mil 500.00mil 1.4920mm 1.4000mm 1.6900mm "12" "12" "onsolder,nopaste,edge2"]
 	ElementLine [-125.00mil -200.00mil 225.00mil -200.00mil 10.00mil]
-	ElementLine [-125.00mil 150.00mil -75.00mil 150.00mil 10.00mil]
-	ElementLine [-75.00mil 150.00mil -75.00mil 350.00mil 10.00mil]
-	ElementLine [-75.00mil 350.00mil -125.00mil 350.00mil 10.00mil]
 	ElementLine [225.00mil -200.00mil 225.00mil 700.00mil 10.00mil]
 	ElementLine [225.00mil 700.00mil -125.00mil 700.00mil 10.00mil]
 	ElementLine [-125.00mil 700.00mil -125.00mil -200.00mil 10.00mil]
+	ElementLine [-125.00mil 150.00mil -75.00mil 150.00mil 10.00mil]
+	ElementLine [-75.00mil 150.00mil -75.00mil 350.00mil 10.00mil]
+	ElementLine [-75.00mil 350.00mil -125.00mil 350.00mil 10.00mil]
 
 	)
