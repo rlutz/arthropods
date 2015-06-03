@@ -516,14 +516,14 @@ GNU General Public License for more details.
     height = (eff_pin_count - 1) * pin_distance
 
     if style in [STYLE_WSL_ARROW, STYLE_WSL_DENT]:
-        x_offset = mil(125.)
-        y_offset = mil(200.)
+        silk_add_x = mil(125.)
+        silk_add_y = mil(200.)
     else:
-        x_offset = mil(50.)
-        y_offset = mil(50.)
+        silk_add_x = mil(50.)
+        silk_add_y = mil(50.)
 
-    x0 = -x_offset; x1 = width + x_offset
-    y0 = -y_offset; y1 = height + y_offset
+    x0 = -silk_add_x; x1 = width + silk_add_x
+    y0 = -silk_add_y; y1 = height + silk_add_y
 
     if style == STYLE_DENT:
         text_x, text_y, text_dir, text_scale = \
