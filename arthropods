@@ -805,14 +805,18 @@ GNU General Public License for more details.
             e = (opt['pin-mask'] + opt['line-thickness']) / 2.
         else:
             d = mm(3.)
-            e = (opt['pin-mask'] + opt['line-thickness']) / 4.
+            e = zero
         # rectangle with dent, interrupted by pins
         line(x0, y0, x1, y0)
         line(x1, y0,
              x1, y0 + d)
         line(x1, y0 + d,
              e, y0 + d)
-        for i in xrange(1, eff_pin_count - 2):
+        if eff_pin_count == 2:
+            pins = 0,
+        else:
+            pins = xrange(1, eff_pin_count - 2)
+        for i in pins:
             line(x1 - mm(2.1), i * pin_distance + (
                      opt['pin-mask'] + opt['line-thickness']) / 2.,
                  x1 - mm(2.1), (i + 1) * pin_distance - (

@@ -1,15 +1,15 @@
 row-count = 1
 row-distance = 100mil
 pin-distance = 100mil
-outer-pad-length = 0mil
+outer-pad-length = 25mil
 inner-pad-length = 0mil
 
 line-thickness = 10mil
 
-pin-thickness = 81.00mil
-pin-clearance = 39.37mil
-pin-mask = 84.94mil
-pin-drill = 46.00mil
+pin-thickness = 1.5mm
+pin-clearance = 1.4mm
+pin-mask = 1.7mm
+pin-drill = 1mm
 
 pad-thickness = 1.492mm
 pad-clearance = 1.4mm
